@@ -1,0 +1,9 @@
+interface:
+  display_name: "Codex Context Brief Builder"
+  short_description: "Create reusable Codex context briefs only from explicit implementation source material."
+  icon_small: "./assets/icon-small.svg"
+  icon_large: "./assets/icon.svg"
+  default_prompt: "Use $codex-context-brief-builder only when the user explicitly provides or identifies implementation source material, such as a spec, API doc, schema, requirements doc, SDK guide, or integration guide, and wants a reusable Markdown context brief for Codex or a coding agent. Do not use it for ordinary summaries, generic doc-to-Markdown conversion, formal document artifacts, post-implementation doc updates, Notion organization, direct coding, or coding task prompts."
+
+policy:
+  allow_implicit_invocation: true

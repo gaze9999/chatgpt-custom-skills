@@ -1,0 +1,9 @@
+interface:
+  display_name: "Agent Governance Architect"
+  short_description: "Audit and restructure repository AGENTS.md, Codex config, subagent roles, routing, and token-cost boundaries."
+  icon_small: "./assets/icon-small.svg"
+  icon_large: "./assets/icon.svg"
+  default_prompt: "Use $agent-governance-architect only for repository agent governance: scan the repo structure first, then review or update AGENTS.md, .codex agents, subagent roles, routing, delegation, or token-cost rules where needed."
+
+policy:
+  allow_implicit_invocation: true

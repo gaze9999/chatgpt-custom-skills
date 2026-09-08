@@ -1,0 +1,9 @@
+interface:
+  display_name: "Coding Task Prompt Builder"
+  short_description: "Convert coding requests into bounded Codex or subagent task prompts with scope, contracts, and acceptance criteria."
+  icon_small: "./assets/icon-small.svg"
+  icon_large: "./assets/icon.svg"
+  default_prompt: "Use $coding-task-prompt-builder only when the desired output is a reusable coding-agent task prompt. Preserve scope, contracts, constraints, acceptance criteria, open items, and stop conditions; do not solve the coding task directly."
+
+policy:
+  allow_implicit_invocation: true
