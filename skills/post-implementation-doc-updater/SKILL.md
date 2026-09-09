@@ -78,6 +78,7 @@ Accept change evidence from:
 - pasted code-change summaries
 - existing Markdown docs, README files, changelogs, memo files, or Codex context briefs
 - Notion pages or databases only when the user explicitly requests Notion updates for the implementation change
+- an explicitly uploaded PDF only as optional implementation-change evidence; it is not a Markdown or Notion sync target
 
 When evidence is incomplete, ask only for information that affects correctness, target location, or update authorization.
 
@@ -113,7 +114,7 @@ When unsure, mark the update as `maybe` and explain what evidence is missing.
 
 ## Notion update gate
 
-Do not read, search, or update broad Notion workspaces just because the request mentions docs, memo, or sync.
+Do not read, search, or update broad Notion workspaces just because the request mentions docs, memo, or sync. For a permitted target, use the exact-target reader and writer rules in [Notion Sync Reader and Writer Contract](references/notion-sync-reader-writer-contract.md). An uploaded Notion JSON snapshot may be inspected locally, but it does not authorize a live Notion write.
 
 Use Notion only when at least one of these is true:
 
@@ -192,10 +193,53 @@ python scripts/scan_changed_files.py --repo <repo-root> --json
 python scripts/validate_doc_update_plan.py <doc-update-plan.md> --json
 ```
 
+## Sync target readers and writers
+
+Before a dual Markdown / Notion update, inspect the one explicit Markdown target:
+
+```bash
+python scripts/inspect_markdown_sync_target.py <target.md> --json
+```
+
+The reader reports the target's SHA-256, frontmatter, heading structure, Notion page IDs / URLs, and `sync_mode`. It does not scan a directory or write a file.
+
+To replace an explicitly approved Markdown target, first preserve the reader's SHA-256 and prepare the full replacement content as a UTF-8 file. Use a dry run before the real write:
+
+```bash
+python scripts/write_markdown_sync_target.py <target.md> --content-file <replacement.md> --expected-sha256 <reader-sha256> --dry-run
+python scripts/write_markdown_sync_target.py <target.md> --content-file <replacement.md> --expected-sha256 <reader-sha256>
+```
+
+The writer refuses to replace a target whose SHA-256 changed after inspection. It has no directory mode, no automatic merge, and no Git commit / push behavior.
+
+For an uploaded Notion page snapshot or API export, inspect one explicit JSON file:
+
+    python scripts/inspect_notion_sync_target.py <uploaded-notion-snapshot.json> --page-id <optional-page-id> --json
+
+The reader reports the uploaded snapshot SHA-256, page ID, URL, last-edited time, properties, direct-block count, and completeness markers. It does not accept tokens, connect to Notion, search a workspace, or write to Notion. It validates only the supplied snapshot, not the current remote Notion page.
+
+For a live Notion update, use the available connector only after the Notion gate and dual-update rule pass. Follow [Notion Sync Reader and Writer Contract](references/notion-sync-reader-writer-contract.md): read the exact target before writing, make the smallest exact change, then re-read the same target. Do not store tokens or emulate a Notion client in a local script.
+
+When an explicit append-only Notion update is authorized, the scripted writer accepts only a page ID, uploaded prepared Notion block JSON, an immediate prior last-edited time, and an environment-only token:
+
+    NOTION_TOKEN=<environment-only-token> python scripts/write_notion_sync_target.py --page-id <page-id> --blocks-file <prepared-blocks.json> --expected-last-edited-time <reader-time> --dry-run
+    NOTION_TOKEN=<environment-only-token> python scripts/write_notion_sync_target.py --page-id <page-id> --blocks-file <prepared-blocks.json> --expected-last-edited-time <reader-time> --json
+
+It appends prepared blocks only after the last-edited-time guard passes, then re-reads the page. It does not search, delete, move, replace existing blocks, create pages, or accept a token argument.
+
+When the user uploads a PDF as optional evidence, inspect its bounded text extraction:
+
+    python scripts/inspect_pdf_sync_source.py <uploaded.pdf> --max-pages 20 --json
+
+The PDF reader reports a source SHA-256, page count, extraction bound, and page text. It does not render, edit, or infer visual layout, and it does not authorize a documentation or Notion write by itself.
+
 Script limits:
 
 - The changed-file scanner classifies likely doc impact from file paths and diff hints; it does not prove behavior changed.
 - The plan validator checks structure and risk markers; it does not verify that every claim is fully supported by the diff.
+- The Markdown reader reports only one explicitly named file; it does not establish that Notion access is authorized.
+- The Markdown writer is a guarded full-file replacement; it does not merge concurrent changes or verify factual alignment.
+- The Notion reader / writer contract depends on an available connector and cannot validate Notion permissions, rendering, or workspace-wide consistency.
 - Script `WARN` entries must be reviewed before applying documentation updates.
 
 ## Update plan structure
