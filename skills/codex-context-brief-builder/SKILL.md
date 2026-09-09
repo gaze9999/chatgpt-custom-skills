@@ -1,1 +1,39 @@
----name: codex-context-brief-builderdescription: 當使用者明確提供或指定規格、API 文件、需求文件、設計契約、schema、整合指南、SDK 文件等實作契約素材，且要求轉成可重複使用的 Codex 可讀 Markdown context brief 時使用。除非使用者明確要可重複使用的 Codex context brief，否則不要用於一般摘要、文件轉 Markdown、日常說明、正式文件產出、直接寫程式、實作後文件更新、Notion 整理或 coding task prompt。---# Codex Context Brief Builder本技能將來源規格、API 文件、需求文件、schema、整合指南、SDK 文件等實作契約素材，轉換為可重複使用的 Markdown context brief，供 Codex 或 coding agent 在後續實作時參考。目標是避免每次都重複上傳或貼上完整來源文件。輸出保留實作相關契約，並以精簡且穩定的 Markdown 檔作為可重複使用的 coding context。本技能不做一般摘要、泛用文件轉換、正式文件美編、直接實作、或實作後文件同步。## Subagent delegation只委派範圍受控的萃取、契約檢查或驗證子任務。交接內容需包含任務目標、來源檔案或摘錄、已驗證契約、相關限制、預期結果與停止條件。不要傳遞完整對話；需要更多證據時指向對應來源素材。## Strict activation requirements僅在以下條件皆成立時使用：1. 使用者提供、上傳、連結、指定或以其他方式辨識要讀取的來源素材。2. 來源素材包含實作相關契約，例如 API 行為、欄位、驗證規則、流程、業務規則、UI 狀態、授權、權限、錯誤處理、整合步驟或驗收條件。3. 使用者要一份可重複使用的 Markdown context brief，供 Codex、coding agent 或後續實作使用。不要只因為使用者提到 `document`、`Markdown`、`API`、`spec`、`Notion`、`summary`、`PDF`、`DOCX`、`Codex` 就直接啟用。若只是要求文件轉 Markdown、文件摘要、整理 Notion、產生正式檔案，或實作後更新文件，應改走對應工作流程。## When to use this skill當使用者要從以下來源建立可重複使用的 Codex / coding-agent context brief 時使用：- API 規格、OpenAPI 摘要、endpoint 文件、SDK 文件、webhook 文件、整合指南- 產品需求、技術規格、功能規格、驗收條件、業務規則- 資料表 schema、事件 schema、JSON 範例、request/response 契約、驗證規則- 定義了實作行為、狀態、文案、可及性或版面限制的 UI/UX 規格- migration notes、架構決策記錄、或需要 Codex 後續重複使用的系統描述常見指令句式：- 「把這份 API 文件整理成 Codex 用的摘要 MD」- 「幫我把規格書轉成之後給 Codex 看的 context brief」- 「整理成可重複使用的 coding agent 背景文件」- 「這份文件太長，幫我壓成不失真 Codex reference」- 「把這份 SDK 文件整理成之後實作時可重複引用的 Markdown」## When not to use this skill不要用於：- 一般文章、閱讀筆記、會議筆記、研究筆記- 一般文件轉 Markdown，但未指定後續可重複使用於 Codex/coding-agent 的情境- 直接 coding、除錯、重構、實作- 產生單一 coding 任務 prompt；請改用 Coding Task Prompt Builder- 實作後更新文件/備忘錄；請改用 Post-Implementation Doc Updater- 正式的 PDF/DOCX 文件產出；請改用 Document Production Pipeline- 一般 Notion 整理、資料庫清理、頁面排序、空間結構調整- 無法可靠讀取、萃取、驗證到可保留契約的來源素材若請求在未保留未來 Codex 契約前提下即可做成一般摘要或文件轉換，則不使用本技能。## Input handling可接受上傳檔案、貼上的文字、可閱讀截圖、repo 檔案或可用連接器文件。輸出 brief 前：1. 確認來源型別、來源邊界、預期未來 coding 使用方式。2. 確認輸出是可重複使用的 Markdown context brief，而非正式文件或一次性 task prompt。3. 保留會影響實作的精確契約（名稱、端點路徑、欄位名、enum、狀態碼、限制、範例）。4. 壓縮冗長敘述、理由背景、行銷文字、與重複背景內容。5. 明確標記不確定與缺漏，避免把缺失、歧義、抽取不足或衝突訊息轉成已確認事實。6. 多檔案時，必要時保留來源邊界以利追溯。只有當缺漏資訊影響來源覆蓋、可重複使用範圍、輸出目標或 coding 正確性時才追問。## Source extraction workflow當來源為 PDF、DOCX、XLSX、CSV、TXT、Markdown、JSON、YAML 等檔案，且可執行腳本時，先抽取文字，不要直接把每頁/每表逐一讀進 context。使用：```bashpython scripts/extract_source_text.py <source-file> --out <extracted-source.md>```快速檢查可用：```bashpython scripts/extract_source_text.py <source-file>```若使用者明確要求且來源為掃描 PDF 或內嵌 OOXML 圖片，才用 OCR 後備處理：```bashpython scripts/extract_source_text.py <source-file> --ocr-fallback --ocr-max-items 20 --ocr-lang eng```OCR 永不作為預設。僅在原生抽取不足或關鍵圖片需轉錄時才使用。流程先嘗試 `requirements.txt` 中的 `rapidocr` + `onnxruntime`；無法使用時改用本機可用的 Tesseract 資料，`--ocr-lang` 控制 Tesseract 後備語言。PDF OCR 另需 Poppler `pdftoppm`。OCR 文字需保留來源位置、引擎與信心值，且在視覺原文核對前只能當作部分覆蓋。支援的萃取目標：- `.pdf`：依可用性嘗試 `pypdf`、`pdfplumber`、`PyPDF2` 或 `pdftotext`；必要時以 OCR 處理限制頁面- `.docx`：使用 Python 標準函式庫萃取段落、表格、頁首頁尾、註腳與尾註；必要時 OCR 處理 Word 圖片- `.xlsx`：使用標準函式庫萃取儲存格值與共享字串；必要時 OCR 處理 Excel 媒體圖片- `.pptx`：可選 OCR 處理 PowerPoint 媒體圖片，但不取代投影片文字萃取- `.csv` / `.tsv`：壓縮為每列文字- `.txt`、`.md`、`.markdown`、`.json`、`.yaml`、`.yml`：以常見編碼直接讀取萃取文字僅為工作基底，不可當成無條件真相。若萃取缺失、壓縮遺失、截斷、OCR 依賴、表格密集、僅影像或結構歧義，標示來源覆蓋為 partial 或 unverified。`requirements.txt` 僅列 optional Python 套件。先用隨附 runtime，缺套件時僅在獲得授權後安裝。Poppler、Tesseract 等系統工具刻意不列為 pip 依賴。建議直接執行腳本；除非腳本失敗或需修改，否則不讀取腳本原始碼。## Output contract環境可建立檔案時，請產生實體 Markdown；若不可建立則直接輸出內容。建議檔名：```text<source-or-project-name>_Codex_Context_Brief.md```除非使用者明確要求，不要在檔名加版本；若來源版本已確認，放到 Markdown metadata。輸出必須保留為 Codex context brief，不得展開為完整教學、正式文檔、一般知識文章或正式 PDF/DOCX 文風格文件。## Markdown structure能用時採以下結構；可省略空白段，但除非完全不適用，仍保留 Metadata、Scope、Implementation-relevant summary、Implementation guidance for Codex、Open questions / unresolved items、Source traceability。```markdown# <Project / Feature / API> Codex Context Brief## Metadata- Source: <file / URL / pasted material / repository path>- Source version: <confirmed version or "Unconfirmed">- Brief date: <date if available>- Intended use: <how Codex should use this brief>- Source coverage: <complete / partial / unverified and why>## Scope<What this brief covers and what it does not cover.>## Implementation-relevant summary<Short summary of the system, feature, or integration from an implementation perspective.>## Contracts and invariants<Rules, constraints, guarantees, compatibility requirements, non-negotiable behavior.>## API / Interface reference### <Endpoint / Method / Component / Schema>- Purpose:- Method / path:- Auth:- Request:- Response:- Errors:- Constraints:- Example:- Notes for Codex:## Data model / schema<Field names, types, required flags, enums, validation, relationships.>## Workflows and state transitions<User flows, backend flows, async jobs, webhook/event flows, edge cases.>## Error handling and edge cases<Errors, retries, idempotency, rate limits, pagination, nullability, fallback behavior.>## Security, privacy, and permissions<Auth, scopes, PII, secrets, access control, logging constraints.>## Implementation guidance for Codex<How Codex should use the brief during implementation. Include boundaries and common mistakes to avoid.>## Open questions / unresolved items<Unknowns, conflicts, missing source details, assumptions that need confirmation.>## Source traceability<Short source map, citations, page / section references, or repository paths when available.>```## Compression rules保留：- endpoint、方法、事件、元件、schema、欄位名、enum、狀態碼、驗證規則- 解析歧義時需保留 request / response 範例- 安全、授權、權限、速率限制、分頁、冪等性、錯誤處理- 驗收條件、業務規則、狀態轉移、edge case、可觀測 UI 行為- 來源版本、日期、覆蓋度與追溯訊息（可得時）可壓縮或刪除：- 行銷文字、冗長開場、重複概述、僅外觀展示而不定義行為的截圖、與實作無關敘事- 重複但未新增契約資訊的範例- 已過時章節（除非定義相容風險或 migration 約束）## Deterministic validation script產出 brief 後在可執行腳本環境執行驗證：```bashpython scripts/validate_context_brief.py <brief.md>```輸出機器可讀：```bashpython scripts/validate_context_brief.py <brief.md> --json```更嚴格檢查：```bashpython scripts/validate_context_brief.py <brief.md> --strict```此腳本檢查 Markdown 結構、建議 heading、程式碼圍欄平衡、Codex intended-use 標記、實作訊號分類、來源覆蓋、來源追溯標記、未解項目標記與常見機敏字串。腳本限制：- 不保證來源文件一定支持 brief 所有主張- 不保證 API 完整正確、完整性或相容性- `WARN` 表示此項在特定 brief 可能可接受，但重用前應先審查建議直接執行腳本；除非腳本失敗或需修改，否則不讀入腳本原始碼。## Codex usability rules- 以供未來 coding 使用為主，不是一般閱讀體驗。- 用精準項目符號、表格、精簡範例，少用長段敘述。- 明確保留實作邊界。- 使用 `Assumption`、`Open question`、`Conflict` 標註不確定、缺漏、衝突。- 抽取缺口標示 `Source coverage: partial` 或 `Source coverage: unverified`。- 不捏造 API、欄位、錯誤、版本、行為、依賴、檔案路徑或測試。- 不加入密碼、金鑰、私人 token 或非必要個資。- 資料太大時分批建立 brief，並保留追溯資訊。## Final response最後回覆精簡，包含：- 產生的 Markdown 連結或輸出內容- 來源覆蓋摘要- 使用 extractor 時的萃取結果- 已執行驗證結果（如有）- 重要未確認問題或未驗證部份- 該 brief 是否適合後續 Codex 使用
+---
+name: codex-context-brief-builder
+description: 將使用者明確提供的實作契約素材轉為可重複使用的 Codex Markdown context brief；不用於一般摘要或一次性 coding 任務。
+metadata:
+  short-description: 建立精簡、可追溯的 coding context brief
+---
+
+# Codex Context Brief Builder
+
+將規格、API 文件、schema、整合指南或驗收條件，壓縮成後續實作可重複使用的 Markdown context brief。保留精確契約與來源追溯，不產出一般摘要、正式成品文件或直接實作。
+
+## 啟用條件
+
+僅在同時具備下列條件時使用：
+
+- 使用者提供或明確指定可讀取的來源素材。
+- 素材包含實作相關契約，例如行為、欄位、流程、權限、錯誤處理或驗收條件。
+- 使用者要求可重複使用的 Codex／coding agent Markdown context brief。
+
+單純文件轉 Markdown、一般摘要、Notion 整理、正式 PDF/DOCX、單一 coding prompt 或實作後文件更新，改用對應流程。
+
+## 作業方式
+
+- 先確認來源邊界、預定使用方式與輸出目標；只在缺口影響正確性或覆蓋範圍時追問。
+- 保留名稱、路徑、欄位、enum、狀態碼、驗證、安全／權限、錯誤、限制、範例與驗收條件。
+- 壓縮行銷文字、重複背景與不影響實作的敘事；不把缺漏、衝突或 OCR 結果寫成已確認事實。
+- 多份來源保留可追溯的來源邊界；資料過大時只抽取與任務相關的區段。
+
+## 按需工具
+
+- PDF、DOCX、XLSX 或其他結構化檔案：先執行 `scripts/extract_source_text.py <source-file>`；掃描檔或關鍵圖片無法原生抽取時才加 `--ocr-fallback`。
+- OCR、表格或萃取不足時，將覆蓋度標為 `partial` 或 `unverified`，並保留來源位置。
+- 完成 brief 後執行 `scripts/validate_context_brief.py <brief.md>`；需要機器可讀結果時加 `--json`。
+
+## 輸出契約
+
+可寫入時建立實體 Markdown，建議檔名為 `<source-or-project-name>_Codex_Context_Brief.md`。內容至少包含：Metadata、Scope、實作摘要、Contracts and invariants、Codex 實作指引、未解項目與來源追溯；只保留適用的 API、資料模型、流程、錯誤或安全段落。
+
+最終回覆列出輸出位置、來源覆蓋度、已執行驗證與重要未確認項目。

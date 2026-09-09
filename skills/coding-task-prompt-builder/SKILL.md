@@ -1,1 +1,27 @@
----name: coding-task-prompt-builderdescription: 從最少必要欄位輸入建立簡潔、可直接執行的 coding 任務 prompt，並保留 scope、契約與驗收邊界。metadata:  short-description: 精簡 coding 任務 prompt 產生器---# Coding 任務 Prompt Builder將使用者提供的任務資訊整理成可直接交給 coding agent 的 prompt。只輸出任務 prompt，不加入教學、前言或流程回顧。使用者當次明確指示優先於本 skill 的預設規則。## 輸入- `GOAL`：必要，目標與預期結果。- `TASK_TYPE`：可選，例如 implementation / diagnosis / review / planning。- `EVIDENCE`：可選，已確認現況。- `SCOPE`：可選，可修改或調查的範圍。- `CONTRACT`：可選，必須保留的行為或介面。- `CONSTRAINTS`：可選，任務特有限制。- `ACCEPTANCE`：可選，可觀察的驗收條件。- `UNKNOWNS`：可選，尚未確認事項。- `FILE_HINTS`：可選，已知相關檔案。## 規則- 只保留會影響本任務的資訊；不要重複一般 coding style、repo 既有規則或可直接從 repo 查得的套件與版本資訊。- 不擴張 `SCOPE`，不改寫 `CONTRACT`，不把未知資訊補成事實。- Implementation 預設採最小必要修改；diagnosis / review / planning 保持唯讀。- 未知資訊只有在阻礙授權、契約或必要決策時才列為 blocker；其餘列為 open item。- 不捏造 API、檔案、版本、命令、測試結果或執行結果。- 不加入 commit / push / deploy 要求，除非使用者明確指定。- 驗收條件必須可觀察；只能依實際證據標示通過、失敗或未執行。- 可選欄位沒有內容時直接省略，避免為固定格式增加無效 context。## 輸出格式不使用固定分區塊。直接輸出可直接交接的任務 prompt 本文本身即可，不輸出 `TASK`、`CONTEXT` 等標題段。
+---
+name: coding-task-prompt-builder
+description: 從最少必要欄位建立簡潔、可直接執行的 coding 任務 prompt，並保留 scope、契約與驗收邊界。
+metadata:
+  short-description: 精簡 coding 任務 prompt 產生器
+---
+
+# Coding 任務 Prompt Builder
+
+將使用者提供的任務資訊整理成可直接交給 coding agent 的 prompt。只輸出 prompt 本文，不加教學、前言或流程回顧；使用者當次指示優先。
+
+## 輸入
+
+必要欄位：`GOAL`。
+
+可選欄位：`TASK_TYPE`、`EVIDENCE`、`SCOPE`、`CONTRACT`、`CONSTRAINTS`、`ACCEPTANCE`、`UNKNOWNS`、`FILE_HINTS`。
+
+## 規則
+
+- 只保留會影響任務的資訊；不重複 repo 既有規則或可直接查得的資訊。
+- 不擴張 scope、不改寫 contract，也不把未知補成事實。
+- implementation 採最小必要修改；diagnosis、review、planning 預設唯讀。
+- 只有未知會阻礙授權、契約或必要決策時才列為 blocker，其餘列為 open item。
+- 驗收條件必須可觀察；不捏造 API、檔案、版本、命令或驗證結果。
+- 未經明確要求，不加入 commit、push 或 deploy。
+
+直接輸出可交接的任務 prompt；空白可選欄位直接省略。
