@@ -62,6 +62,11 @@ Do not use this skill for normal implementation work, bug fixes, code review, pr
 - 不捏造角色、能力、路由或未來功能。
 - 只有在責任邊界確實需要時才新增、刪除或更名角色；更名時同步更新所有引用。
 
+## OpenAI 官方建議優先
+- 涉及 Codex agent、subagent、`AGENTS.md`、Skills 或 agent 設定的新增與修改前，先查核當前 OpenAI 官方文件的相關建議與支援設定。
+- 以官方建議作為預設，再套用使用者明確要求與 repo 已驗證的相容性、權限及工作流限制；使用者明確指示優先。
+- 不把未經官方文件支援的設定、欄位或行為寫入 agent 設定；若官方建議與現有規則衝突，標示衝突與影響後再做最小必要調整。
+
 ## Repo 掃描 script
 
 需要盤點 repo 結構、Skill 分布、重要治理檔或大型檔案時，先直接執行：
