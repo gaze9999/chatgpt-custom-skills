@@ -1,32 +1,33 @@
 ---
 name: document-production-pipeline
-description: 從使用者需求與來源素材建立可交付的文件 artifact；未指定格式時預設輸出 PDF。
+description: Create finished document artifacts from user requirements and source material; default to PDF when no format is specified.
 metadata:
-  short-description: 預設 PDF 的文件產出 pipeline，可依需求輸出 DOCX／Markdown
+  short-description: Default-PDF document production pipeline with DOCX and Markdown support
 ---
 
-# 文件成品產出 Pipeline
+# Document Production Pipeline
 
-將使用者的內容、來源與限制整理為可交付文件，而非只輸出草稿或生成 prompt。未指定格式時產出 PDF；指定 DOCX、Markdown 或多種格式時以使用者要求為準。
+Turn user content, sources, and constraints into deliverable documents rather than drafts or generation prompts. Default to PDF; honor explicit DOCX, Markdown, or multi-format requests.
+Activate only when the user explicitly requests a finished downloadable artifact. For chat-only drafting, summaries, translation, or planning, use the corresponding workflow instead.
 
-## 核心流程
+## Core workflow
 
-- 確認目標、受眾、已有內容、必要來源與限制，再建立資訊架構。
-- 需要外部資料時，只使用可直接支持敘述的可靠來源；可能變動的資訊先查證。
-- 建立真正可開啟的 artifact，保留使用者提供的事實、數字、專有名詞與引用；不捏造無法確認的資料。
-- 依文件用途與格式需求，讀取 [文件產出指引](references/document-production-guidelines.md)。
+- Establish the goal, audience, existing material, required sources, and constraints before building the information architecture.
+- When external information is required, use reliable sources that directly support the claim and verify time-sensitive facts first.
+- Create an actual openable artifact. Preserve user-supplied facts, figures, terminology, and citations; do not invent unsupported information.
+- Read [Document Production Guidelines](references/document-production-guidelines.md) when format-specific or layout guidance is needed.
 
-## 格式與品質
+## Format and quality
 
-- PDF：文字可選取、字型與繁中／日文正常顯示；需 render 時檢查目錄、標題、表格與留白。
-- DOCX：使用原生 Heading、TOC 與頁碼欄位；必要時 render 確認目錄與頁碼。
-- Markdown：維持連續 heading hierarchy，不模擬頁碼或固定紙張版面。
-- 多格式輸出需維持事實、章節與引用一致，允許格式特有的版面差異。
+- PDF: preserve selectable text and correct Traditional Chinese or Japanese rendering; inspect contents, headings, tables, and whitespace when rendering is available.
+- DOCX: use native Heading, TOC, and page-number fields; render when needed to confirm pagination and contents.
+- Markdown: keep a continuous heading hierarchy and do not simulate pagination or fixed paper layout.
+- Across formats, keep facts, sections, and citations consistent while allowing format-specific layout differences.
 
-涉及科學、醫療、健康、藥學或心理學的文件，使用 APA 第七版文內引用與參考資料；其他內容也需使用可追溯且直接支持主張的來源。
+For scientific, medical, health, pharmaceutical, or psychological content, use APA 7 in-text citations and references. All other factual claims also require traceable sources that directly support them.
 
-## 按需驗證
+## On-demand verification
 
-依輸出格式執行對應工具：`scripts/validate_pdf.py`、`scripts/validate_docx.py`、`scripts/validate_markdown.py`；使用 APA 時執行 `scripts/validate_apa7.py`。無法完成 render 或其他檢查時，標記未驗證與原因，不宣稱通過。
+Run the matching validator: `scripts/validate_pdf.py`, `scripts/validate_docx.py`, `scripts/validate_markdown.py`, or `scripts/validate_apa7.py`. When rendering or another check cannot be completed, mark it unverified with the reason rather than claiming success.
 
-最終回覆僅列出成品連結、格式、已完成驗證與未驗證項目。
+In the final response, list only deliverable links, formats, completed checks, and unverified items.

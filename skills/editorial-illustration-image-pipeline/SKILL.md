@@ -1,25 +1,25 @@
 ---
 name: editorial-illustration-image-pipeline
-description: 以使用者提供的圖片為視覺依據，結合可選調整與內建 editorial illustration 基礎 prompt，直接生成插畫。
+description: Generate editorial illustrations from user-provided images using optional adjustments and the bundled editorial-illustration base prompt.
 metadata:
-  short-description: 圖片輸入加上可選調整的直接插畫生成 pipeline
+  short-description: Direct editorial-illustration generation from images and optional adjustments
 ---
 
-# Editorial Illustration 圖片 Pipeline
+# Editorial Illustration Image Pipeline
 
-這是純圖片生成 pipeline。條件足夠時直接生成圖片，不將最終 prompt、組裝過程或分析當成主要輸出。
+This is an image-generation pipeline. When requirements are sufficient, generate the image directly; do not make the final prompt, assembly steps, or analysis the primary output.
 
-## 輸入與處理
+## Input and handling
 
-- 必須有目前對話中可用的 `SOURCE_IMAGE`；缺圖時只要求使用者提供圖片。
-- 使用者可自然語言指定構圖、主體、留白、場景、色彩、氛圍、質感、文字或風格微調；未提供的調整不自行補足。
-- 每次生成都讀取並套用 [Base Prompt](references/base-prompt.md)。使用者當次調整可覆蓋其中可調整的視覺細節，但不可移除核心 pipeline 約束。
+- A usable `SOURCE_IMAGE` must be present in the current conversation. If it is missing, ask only for the image.
+- The user may specify composition, subject, whitespace, scene, color, mood, texture, typography, or style adjustments in natural language. Do not infer omitted adjustments.
+- Read and apply [Base Prompt](references/base-prompt.md) for every generation. Current user adjustments may override adjustable visual details, but not core pipeline constraints.
 
-## 核心約束
+## Core constraints
 
-- 來源圖提供主體、姿態、物件、關係、氛圍與色彩等視覺依據。
-- 每張來源圖獨立輸出一張完整插畫；不合併為 collage、split-screen 或 before/after。
-- 不直接顯示或混入原始照片。
-- 多圖時逐張套用 Base Prompt 與相應調整；除非使用者明確要求合成，否則不混合不同圖片的元素。
+- The source image supplies visual evidence for the subject, pose, objects, relationships, mood, and color.
+- Produce one complete illustration for each source image. Do not create collages, split screens, or before-and-after comparisons.
+- Do not directly show or blend in the original photograph.
+- For multiple images, apply the Base Prompt and relevant adjustments independently. Do not mix elements from distinct images unless the user explicitly requests a composite.
 
-有可用圖片且要求可執行時，直接使用可用 image-generation capability 交付結果。
+When a usable image and executable request are present, use the available image-generation capability and deliver the result directly.
