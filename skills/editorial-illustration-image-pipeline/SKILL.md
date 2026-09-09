@@ -1,1 +1,25 @@
----name: editorial-illustration-image-pipelinedescription: 使用使用者提供的圖片，結合可選的使用者調整與內建的 editorial illustration 基礎 prompt，直接執行圖片生成。metadata:  short-description: 圖片輸入 + 可選調整 + 基礎 prompt 的直接生成 pipeline---# Editorial Illustration 圖片 Pipeline這是一個純圖片生成 pipeline。用途是接收使用者提供的來源圖片，結合本 Skill 內建的基礎 prompt 與使用者可選的額外調整，直接執行圖片生成。不要把最終 prompt 當成主要輸出。條件足夠時應直接生成圖片，不輸出 prompt builder 式的中間產物、教學或分析。## Pipeline 合約1. 先確認目前對話中有可用的來源圖片。2. 每張來源圖片都獨立處理；一張來源圖對應一張輸出圖，不得把多張來源圖合併成 collage、split-screen 或 before/after。3. 每次生成都必須載入並套用 [Base Prompt](references/base-prompt.md)。4. 若使用者有額外調整，將其與 Base Prompt 合併後再執行圖片生成。5. 直接使用可用的 image-generation capability 產生圖片。6. 正常成功時不輸出組裝後的 prompt；只交付生成結果。7. 若沒有可用來源圖片，只要求使用者提供圖片，不臆造來源內容。## 輸入### 必要- `SOURCE_IMAGE`：目前對話中一張或多張可用的使用者圖片。### 可選使用者調整使用者可以自然語言補充，不要求固定欄位。常見調整包含但不限於：- 構圖或主體位置- 主體大小- 留白比例- 場景保留／移除內容- 色彩傾向- 情緒與氛圍- 紙張或繪畫質感- typography 內容與位置- style tweak- 其他當次明確的視覺要求未提供的調整不自行補成新的需求。## 合併優先序最終生成條件由以下三部分組成：1. `SOURCE_IMAGE`：提供構圖、主體身份、姿態、物件、關係、氛圍與色彩等視覺依據。2. [Base Prompt](references/base-prompt.md)：提供預設 editorial illustration art direction。3. 使用者當次額外調整：只加入使用者明確要求的差異。使用者當次明確調整優先於 Base Prompt 中可調整的風格細節；未被使用者修改的部分沿用 Base Prompt。以下核心 pipeline 約束不因一般 style tweak 被移除：- 來源圖片必須作為視覺依據。- 每張來源圖獨立輸出。- 最終畫面不得直接顯示或混入原始照片。- 最終結果應為完整插畫輸出，而不是 prompt、分析或 before/after 展示。若使用者明確要求改變 Base Prompt 的某個非核心條件，例如主體比例、配色數量、文字、背景或構圖細節，依使用者當次要求調整，不需要維持該預設值。## 多圖處理若一次提供多張圖片：- 逐張使用相同 Base Prompt。- 對每張圖分別套用與該圖相關的使用者調整。- 每張圖產生獨立輸出。- 不把不同來源圖的主體、背景或敘事元素互相混合，除非使用者明確要求新的合成任務。## Base Prompt 依賴本 pipeline 的必要內部 dependency：- [references/base-prompt.md](references/base-prompt.md)執行圖片生成前必須以該檔案作為基礎 art direction。不要在 `SKILL.md` 內重複維護完整 base prompt，以避免同一規格出現兩份而產生漂移。## 輸出行為- 有可用來源圖片且需求可執行：直接生成圖片。- 多張來源圖片：分別生成獨立圖片。- 缺少來源圖片：只要求補圖。- 不額外輸出 `FINAL_PROMPT`。- 不輸出 prompt 組裝過程、分析、摘要或教學。
+---
+name: editorial-illustration-image-pipeline
+description: 以使用者提供的圖片為視覺依據，結合可選調整與內建 editorial illustration 基礎 prompt，直接生成插畫。
+metadata:
+  short-description: 圖片輸入加上可選調整的直接插畫生成 pipeline
+---
+
+# Editorial Illustration 圖片 Pipeline
+
+這是純圖片生成 pipeline。條件足夠時直接生成圖片，不將最終 prompt、組裝過程或分析當成主要輸出。
+
+## 輸入與處理
+
+- 必須有目前對話中可用的 `SOURCE_IMAGE`；缺圖時只要求使用者提供圖片。
+- 使用者可自然語言指定構圖、主體、留白、場景、色彩、氛圍、質感、文字或風格微調；未提供的調整不自行補足。
+- 每次生成都讀取並套用 [Base Prompt](references/base-prompt.md)。使用者當次調整可覆蓋其中可調整的視覺細節，但不可移除核心 pipeline 約束。
+
+## 核心約束
+
+- 來源圖提供主體、姿態、物件、關係、氛圍與色彩等視覺依據。
+- 每張來源圖獨立輸出一張完整插畫；不合併為 collage、split-screen 或 before/after。
+- 不直接顯示或混入原始照片。
+- 多圖時逐張套用 Base Prompt 與相應調整；除非使用者明確要求合成，否則不混合不同圖片的元素。
+
+有可用圖片且要求可執行時，直接使用可用 image-generation capability 交付結果。
