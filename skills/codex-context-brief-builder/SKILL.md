@@ -11,6 +11,10 @@ The goal is to avoid repeatedly uploading or pasting the full source document. T
 
 The goal is not ordinary summarization, general document conversion, polished document production, implementation work, or post-implementation documentation synchronization.
 
+## Subagent delegation
+
+Delegate only a bounded extraction, contract check, or validation subtask. Pass a compact handoff with the task goal, named source files or excerpts, verified contracts, relevant constraints, expected result, and stop condition. Do not pass the full user conversation or make a subagent inherit it; point to the source artifact when more evidence is needed.
+
 ## Strict activation requirements
 
 Use this Skill only when all requirements are true:

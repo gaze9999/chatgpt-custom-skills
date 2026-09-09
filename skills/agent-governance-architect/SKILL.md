@@ -37,6 +37,7 @@ Do not use this skill for normal implementation work, bug fixes, code review, pr
 - 只描述角色差異：何時委派、負責範圍、不負責範圍、交付／驗證與 handoff。
 - 不複製整份 `AGENTS.md` 或全域 Coding Style。
 - Primary agent 保留需求整合、跨角色協調與最終決策權。
+- 委派時只交付最小必要 handoff：目標、範圍、相關路徑或證據、已確認契約、限制、預期交付與停點；不得傳入整段對話或讓 subagent 繼承完整對話歷史。
 
 ### 4. Task Prompt
 - 一次性需求、暫時限制、單次 migration／bugfix／refactor 細節放在當次 prompt。
@@ -86,7 +87,7 @@ python skills/agent-governance-architect/scripts/scan_repo_structure.py
 - 只有在子任務具明確邊界、可平行處理，或 context 隔離能明顯降低整體成本時才委派。
 - 角色數量維持完成任務所需的最小值，不追求最大並行度，也不硬設固定角色數。
 - 模型與 reasoning 以「能可靠完成角色任務的最低必要成本」為原則；除非使用者或專案明確指定，不在治理規則中硬綁模型名稱。
-- 不把相同 shared context 重複塞進每個 subagent；只傳遞該角色需要的 scope、contract、證據與停點。
+- 不把相同 shared context 重複塞進每個 subagent；不要使用完整對話繼承作為預設。只傳遞該角色需要的 scope、contract、證據與停點。
 - 可以縮短敘述，但不得為節省 token 移除會影響正確性、安全性或責任邊界的限制。
 
 ## 典型流程

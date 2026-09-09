@@ -38,6 +38,7 @@ Do not use this skill when the user asks to implement, debug, explain, review, o
 - 不加入 commit / push / deploy 要求，除非使用者明確指定。
 - 驗收條件必須可觀察；只能依實際證據標示通過、失敗或未執行。
 - 可選欄位沒有內容時直接省略，避免為固定格式增加無效 context。
+- 若 prompt 要交給 subagent，`CONTEXT` 只放完成該子任務必要的已確認事實、相關檔案或來源、契約與限制；不得附上整段對話或要求繼承完整對話歷史。
 
 ## 輸出格式
 依實際需要使用以下區塊，省略空白區塊：

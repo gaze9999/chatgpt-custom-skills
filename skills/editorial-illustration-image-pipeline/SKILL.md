@@ -11,6 +11,10 @@ metadata:
 
 不要把最終 prompt 當成主要輸出。條件足夠時應直接生成圖片，不輸出 prompt builder 式的中間產物、教學或分析。
 
+## Subagent delegation
+
+Delegate only a bounded per-image check or an independently verifiable preparation task. Pass the specific source image, requested adjustment, relevant base-prompt constraint, expected output, and stop condition. Do not pass the full user conversation or make a subagent inherit it.
+
 ## Pipeline contract
 
 1. 先確認目前對話中有可用的來源圖片。

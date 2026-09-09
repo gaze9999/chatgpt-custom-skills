@@ -11,6 +11,10 @@ The primary output is a real file artifact, not a chat-only answer, planning not
 
 When the user does not specify an output format but clearly asks for a document file, default to `PDF`. When the user explicitly requests `DOCX`, `Markdown`, or multiple formats, follow the requested format.
 
+## Subagent delegation
+
+Delegate only independently checkable work such as a bounded source extraction, a format-specific QA check, or a clearly scoped section draft. Pass the goal, artifact path or source excerpt, applicable facts and constraints, output expectation, and stop condition. Do not pass the full user conversation or make a subagent inherit it.
+
 ## Strict activation requirements
 
 Use this Skill only when all requirements are true:

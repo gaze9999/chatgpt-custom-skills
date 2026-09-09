@@ -9,6 +9,10 @@ This Skill updates existing documentation and memo material after implementation
 
 The goal is not to write new documentation from scratch. The goal is to inspect a concrete implementation-change source, identify what existing documentation is affected, update only the necessary doc or memo surfaces, and avoid inventing behavior that is not supported by the change evidence.
 
+## Subagent delegation
+
+Delegate only a bounded evidence review, target inspection, or format-specific validation task. Pass the exact diff, commit, files, or named artifact required for that subtask; include verified facts, relevant constraints, expected result, and stop condition. Do not pass the full user conversation or make a subagent inherit it.
+
 ## Strict activation requirements
 
 Use this Skill only when all requirements are true:
