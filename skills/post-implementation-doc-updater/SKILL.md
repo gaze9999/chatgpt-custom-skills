@@ -230,8 +230,9 @@ It appends prepared blocks only after the last-edited-time guard passes, then re
 When the user uploads a PDF as optional evidence, inspect its bounded text extraction:
 
     python scripts/inspect_pdf_sync_source.py <uploaded.pdf> --max-pages 20 --json
+    python scripts/inspect_pdf_sync_source.py <uploaded.pdf> --max-pages 20 --ocr-fallback --ocr-lang eng --json
 
-The PDF reader reports a source SHA-256, page count, extraction bound, and page text. It does not render, edit, or infer visual layout, and it does not authorize a documentation or Notion write by itself.
+The PDF reader reports a source SHA-256, page count, extraction bound, page text, and reader engine. It prefers `pypdf`, with `pdfplumber` as a Python-library fallback. With `--ocr-fallback`, it uses optional `rapidocr` + `onnxruntime` first for pages with insufficient native text, then Tesseract only when RapidOCR is unavailable, and retains OCR text, engine, and confidence separately. It does not render, edit, or infer visual layout, and it does not authorize a documentation or Notion write by itself.
 
 Script limits:
 
@@ -240,6 +241,7 @@ Script limits:
 - The Markdown reader reports only one explicitly named file; it does not establish that Notion access is authorized.
 - The Markdown writer is a guarded full-file replacement; it does not merge concurrent changes or verify factual alignment.
 - The Notion reader / writer contract depends on an available connector and cannot validate Notion permissions, rendering, or workspace-wide consistency.
+- OCR is optional. The local `requirements.txt` provides the Python OCR path; its first use may provision local OCR models and its default model supports Chinese and English. `--ocr-lang` applies to the Tesseract system-level fallback. OCR-derived page text is partial evidence and does not verify tables, layout, handwriting, stamps, or image semantics.
 - Script `WARN` entries must be reviewed before applying documentation updates.
 
 ## Update plan structure

@@ -9,7 +9,7 @@ Supported inputs:
 - .txt, .md, .markdown, .json, .yaml, .yml, .csv
 - .docx through OOXML ZIP parsing
 - .xlsx through OOXML ZIP parsing
-- .pdf through pypdf/PyPDF2 or pdftotext/pdftotext CLI when available
+- .pdf through pypdf, pdfplumber, PyPDF2, or pdftotext when available
 
 The output is meant to be a compact extraction base for a Codex context brief,
 not a final source of truth. Always preserve uncertainty when extraction is
@@ -30,6 +30,8 @@ import sys
 import zipfile
 from pathlib import Path
 from typing import Iterable
+
+from ocr_fallback import ocr_fallback
 from xml.etree import ElementTree as ET
 
 TEXT_EXTENSIONS = {".txt", ".md", ".markdown", ".yaml", ".yml", ".json"}
@@ -208,9 +210,26 @@ def extract_pdf_with_python(path: Path) -> str | None:
                 if page_text.strip():
                     chunks.append(f"\n## PDF page {index}\n{page_text}")
             return "\n".join(chunks)
-        except Exception as exc:
-            return f"[PDF extraction failed with {module_name}: {exc}]"
+        except Exception:
+            continue
     return None
+
+
+def extract_pdf_with_pdfplumber(path: Path) -> str | None:
+    try:
+        import pdfplumber
+    except ImportError:
+        return None
+    try:
+        with pdfplumber.open(str(path)) as pdf:
+            chunks = []
+            for index, page in enumerate(pdf.pages, start=1):
+                page_text = page.extract_text() or ""
+                if page_text.strip():
+                    chunks.append(f"\n## PDF page {index}\n{page_text}")
+            return "\n".join(chunks) or None
+    except Exception:
+        return None
 
 
 def extract_pdf_with_cli(path: Path) -> str | None:
@@ -236,12 +255,15 @@ def extract_pdf_with_cli(path: Path) -> str | None:
 
 def extract_pdf(path: Path) -> str:
     text = extract_pdf_with_python(path)
-    if text is not None:
+    if text and text.strip():
+        return text
+    text = extract_pdf_with_pdfplumber(path)
+    if text and text.strip():
         return text
     text = extract_pdf_with_cli(path)
     if text is not None:
         return text
-    return "[PDF text extraction unavailable: install pypdf, PyPDF2, or pdftotext. Treat source coverage as unverified.]"
+    return "[PDF text extraction unavailable: install pypdf or pdfplumber, or provide pdftotext. Treat source coverage as unverified.]"
 
 
 def extract(path: Path, max_rows_per_sheet: int) -> tuple[str, str]:
@@ -265,8 +287,16 @@ def truncate(text: str, max_chars: int) -> tuple[str, bool]:
     return text[:max_chars].rstrip() + "\n\n[TRUNCATED] Extraction exceeded max character limit.", True
 
 
-def build_output(path: Path, source_type: str, body: str, truncated: bool) -> str:
-    status = "partial" if truncated or body.startswith("[") else "extracted"
+def render_ocr_records(records: list[dict[str, object]]) -> str:
+    lines = ["", "## OCR-derived text", "", "- Source coverage: partial; verify OCR-derived contracts against the original visual source.", ""]
+    for record in records:
+        confidence = record["confidence"] if record["confidence"] is not None else "unavailable"
+        lines.extend([f"### {record['location']}", f"- OCR confidence: {confidence}", str(record["text"]) or "[No text recognized]", ""])
+    return "\n".join(lines)
+
+
+def build_output(path: Path, source_type: str, body: str, truncated: bool, ocr_status: str) -> str:
+    status = "partial" if truncated or body.startswith("[") or ocr_status not in {"not_requested", "not_applicable"} else "extracted"
     header = [
         f"# Extracted Source Text: {path.name}",
         "",
@@ -274,6 +304,7 @@ def build_output(path: Path, source_type: str, body: str, truncated: bool) -> st
         f"- Source path: {path}",
         f"- Source type: {source_type}",
         f"- Extraction status: {status}",
+        f"- OCR fallback: {ocr_status}",
         "- Intended use: Build a reusable Codex context brief; verify important contracts against the original source when possible.",
         "",
         "## Extracted text",
@@ -288,6 +319,9 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument("--out", help="Optional output .md/.txt path. Defaults to stdout.")
     parser.add_argument("--max-chars", type=int, default=80000, help="Maximum extracted characters to print/write. Use 0 for no limit.")
     parser.add_argument("--max-rows-per-sheet", type=int, default=200, help="Maximum rows per XLSX worksheet.")
+    parser.add_argument("--ocr-fallback", action="store_true", help="Optionally OCR bounded PDF pages or embedded OOXML images when native extraction is insufficient.")
+    parser.add_argument("--ocr-max-items", type=int, default=20, help="Maximum PDF pages or embedded images to OCR (1-100). Default: 20.")
+    parser.add_argument("--ocr-lang", default="eng", help="Installed Tesseract language code. Default: eng.")
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     path = Path(args.source).expanduser().resolve()
@@ -297,9 +331,14 @@ def main(argv: Iterable[str] | None = None) -> int:
 
     try:
         source_type, extracted = extract(path, args.max_rows_per_sheet)
+        ocr_status = "not_requested"
+        if args.ocr_fallback:
+            records, ocr_status = ocr_fallback(path, args.ocr_max_items, args.ocr_lang)
+            if records:
+                extracted += render_ocr_records(records)
         extracted = normalize_ws(extracted)
         extracted, truncated = truncate(extracted, args.max_chars)
-        output = build_output(path, source_type, extracted, truncated)
+        output = build_output(path, source_type, extracted, truncated, ocr_status)
     except zipfile.BadZipFile:
         print("FAIL invalid_zip_container: file is not a valid DOCX/XLSX ZIP container", file=sys.stderr)
         return 1

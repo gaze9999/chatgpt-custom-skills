@@ -86,6 +86,10 @@ Users may provide natural-language requirements rather than fixed fields. Common
 
 Do not fill missing information as fact. Ask only when the missing detail blocks correctness, file creation, citation quality, target format, or user authorization.
 
+## Python document libraries
+
+For scripts that need structured document I/O, use the optional libraries listed in this Skill's `requirements.txt`: `pypdf` for PDF structure and metadata, `pdfplumber` for PDF text/table extraction, `python-docx` for DOCX writing, and `reportlab` for programmatic PDF generation. Prefer structured extraction over OCR; do not install missing libraries unless the user has authorized the dependency installation. Validate the finished artifact using the normal format-specific QA steps.
+
 ## Format selection
 
 - If the user clearly asks for a document file but omits the format, output `PDF` by default.

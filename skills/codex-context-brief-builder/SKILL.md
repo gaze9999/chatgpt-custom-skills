@@ -87,15 +87,26 @@ For quick inspection, stdout is acceptable:
 python scripts/extract_source_text.py <source-file>
 ```
 
+For an explicitly requested, bounded OCR fallback on uploaded scanned PDFs or embedded OOXML images:
+
+```bash
+python scripts/extract_source_text.py <source-file> --ocr-fallback --ocr-max-items 20 --ocr-lang eng
+```
+
+OCR is never the default. Use it only when native extraction is missing or insufficient, or when an important source image needs transcription. It first tries the optional `rapidocr` + `onnxruntime` Python packages listed in `requirements.txt`; their first use may provision local OCR models and their default model supports Chinese and English. If unavailable, it can use locally available Tesseract language data; `--ocr-lang` controls that Tesseract fallback. PDF OCR also requires Poppler `pdftoppm`. OCR-derived text includes source location, engine, and confidence, and must remain partial source coverage until verified against the original visual source.
+
 Supported extraction targets:
 
-- `.pdf`: tries optional `pypdf`, `PyPDF2`, or `pdftotext` when available; otherwise reports extraction unavailable.
-- `.docx`: extracts paragraphs, tables, headers, footers, footnotes, and endnotes from the OOXML package using Python standard library.
-- `.xlsx`: extracts worksheet cell values and shared strings from the OOXML package using Python standard library.
+- `.pdf`: tries optional `pypdf`, `pdfplumber`, `PyPDF2`, or `pdftotext` when available; optional OCR can process bounded rendered pages.
+- `.docx`: extracts paragraphs, tables, headers, footers, footnotes, and endnotes from the OOXML package using Python standard library; optional OCR can process bounded Word media images.
+- `.xlsx`: extracts worksheet cell values and shared strings from the OOXML package using Python standard library; optional OCR can process bounded Excel media images.
+- `.pptx`: optional OCR can process bounded PowerPoint media images, but does not replace slide text extraction.
 - `.csv` / `.tsv`: extracts rows into compact text lines.
 - `.txt`, `.md`, `.markdown`, `.json`, `.yaml`, `.yml`: reads text directly with common encodings.
 
 Use the extracted text as a working base, not as unquestioned truth. Mark source coverage as partial or unverified when extraction is missing, lossy, truncated, OCR-dependent, table-heavy, image-only, or structurally ambiguous.
+
+`requirements.txt` contains the optional Python dependencies used by this reader. Use the bundled runtime first; install missing dependencies only with user authorization. System executables such as Poppler and Tesseract are deliberately not listed as pip dependencies.
 
 Normal usage should execute the script directly. Do not read the script source into context unless the script fails or needs modification.
 
