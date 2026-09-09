@@ -25,3 +25,5 @@ Optional: `TASK_TYPE`, `EVIDENCE`, `SCOPE`, `CONTRACT`, `CONSTRAINTS`, `ACCEPTAN
 - Do not require commit, push, or deployment unless explicitly requested.
 
 Output a directly handoff-ready task prompt and omit empty optional fields.
+
+Write the generated prompt in concise English by default. Use another language only when the user explicitly requests it or the target project requires it.
