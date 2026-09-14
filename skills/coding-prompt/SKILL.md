@@ -34,6 +34,7 @@ Optional: `TASK_TYPE`, `EVIDENCE`, `SCOPE`, `CONTRACT`, `CONSTRAINTS`, `ACCEPTAN
 - Evaluate the GPT-5.6 options first. Use these starting points, not mandatory pairs:
   - `gpt-5.6-luna` with `low` for small, local, well-specified, low-risk work.
   - `gpt-5.6-sol` with `medium` for ordinary implementation, debugging, or review work.
+  - `gpt-5.6-terra` with `medium` as another candidate for everyday coding-agent work centered on repository discovery, implementation, and focused verification. Compare it with Sol using task fit and available project evidence; do not assume a fixed capability or cost ranking.
   - `gpt-6-astra` with `high` only when substantial ambiguity, cross-module coordination, implementation depth, risk, or multi-step agentic demands justify escalation beyond the GPT-5.6 options. File count or multiple steps alone do not justify escalation.
 - Choose model and reasoning independently; a bounded but demanding task may justify `gpt-5.6-sol` with `high`. Use `xhigh` only when the completed prompt demonstrates a concrete benefit worth the extra latency. Do not default to GPT-6 or maximum reasoning.
 - Recommend one model and one supported reasoning level using current availability evidence from the target environment or official documentation. Treat the examples as preferences, not proof of client availability; state uncertainty or substitute the nearest supported option only when needed. A recommendation does not authorize changing configuration or spawning agents.
