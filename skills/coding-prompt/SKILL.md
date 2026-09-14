@@ -26,11 +26,17 @@ Optional: `TASK_TYPE`, `EVIDENCE`, `SCOPE`, `CONTRACT`, `CONSTRAINTS`, `ACCEPTAN
 - Acceptance criteria must be observable. Do not invent APIs, files, versions, commands, or verification results.
 - Preserve explicit prerequisites, regression cases, boundary values, and stop conditions. When separate batches are requested, keep their scopes and handoffs separate; do not combine a stop instruction with an implicit continuation.
 - Do not require commit, push, merge, deployment, external messages, or unrelated cleanup unless explicitly requested.
-- Recommend one currently available model and one reasoning level after the prompt. Base the recommendation on task complexity:
-  - `gpt-5.6-luna` + `low` for small, local, low-risk changes.
-  - `gpt-5.6-sol` + `medium` for ordinary implementation, debugging, or review work.
-  - `gpt-6-astra` + `high` for complex, cross-module, or multi-step agentic work; use `xhigh` only when the extra latency is justified.
-- State that the recommendation is a starting point and may be unavailable in the user's client; provide the nearest supported fallback only when needed.
+
+## Model and reasoning recommendation
+
+- Finish composing the complete handoff-ready prompt before choosing a model or reasoning level. Assess the task expressed by that prompt, not the length or wording of the original request.
+- Consider scope, ambiguity, risk, required repository discovery, cross-module coordination, implementation depth, and verification burden. Prefer the least demanding option expected to meet the required quality, considering likely rework and total execution effort; do not assume a smaller model guarantees token savings.
+- Evaluate the GPT-5.6 options first. Use these starting points, not mandatory pairs:
+  - `gpt-5.6-luna` with `low` for small, local, well-specified, low-risk work.
+  - `gpt-5.6-sol` with `medium` for ordinary implementation, debugging, or review work.
+  - `gpt-6-astra` with `high` only when substantial ambiguity, cross-module coordination, implementation depth, risk, or multi-step agentic demands justify escalation beyond the GPT-5.6 options. File count or multiple steps alone do not justify escalation.
+- Choose model and reasoning independently; a bounded but demanding task may justify `gpt-5.6-sol` with `high`. Use `xhigh` only when the completed prompt demonstrates a concrete benefit worth the extra latency. Do not default to GPT-6 or maximum reasoning.
+- Recommend one model and one supported reasoning level using current availability evidence from the target environment or official documentation. Treat the examples as preferences, not proof of client availability; state uncertainty or substitute the nearest supported option only when needed. A recommendation does not authorize changing configuration or spawning agents.
 
 ## Context and verification scope
 

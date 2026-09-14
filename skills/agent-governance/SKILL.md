@@ -46,6 +46,14 @@ Place agent instructions at the correct layer with the smallest rule set that pr
 - Pass only the goal, contracts, owned paths, evidence pointers, constraints, acceptance criteria, and stop condition. Use `fork_turns: none` when supported; never pass full history. Request concise results, evidence locations, changed files, and verification gaps. Reuse verified findings; recheck only drift, contradictions, or material gaps instead of repeating the worker's task.
 - Keep estimates separate from measured usage. Do not infer token savings or equal quality from elapsed time, answer length, or one small test. Never reduce required validation to satisfy an unmeasured token target.
 
+## Model and reasoning governance
+
+- Keep durable selection criteria in governance, concrete model defaults in task-specific guidance or maintained configuration, and each task's recommendation with its handoff. Do not copy a model catalog into every role or AGENTS.md.
+- Complete the task scope, constraints, acceptance criteria, and handoff-ready prompt before recommending a model or reasoning level. Judge the resulting task's ambiguity, risk, repository discovery, cross-module coordination, implementation depth, and verification burden; original request length is not a proxy for difficulty.
+- Evaluate suitable GPT-5.6 options before GPT-6. Prefer the least demanding option expected to preserve required quality, accounting for discovery, coordination, verification, and likely rework. Escalate only for concrete task demands; complexity labels, file count, or multiple steps alone are insufficient. Treat this preference as revisable guidance, not a permanent capability ranking.
+- Choose model and reasoning independently within currently supported combinations. Increase reasoning when the task needs deeper analysis without automatically upgrading the model; reserve `xhigh` for an identifiable benefit that justifies added latency. Preserve explicit user selections.
+- When a recommendation is requested, provide one currently available model and one reasoning level based on environment evidence or current official documentation, stating any unresolved availability limit. Model selection does not itself justify delegation or authorize configuration changes.
+
 ## Delivery and verification
 
 Run the narrowest meaningful checks first and preserve required project gates. Reuse applicable results; rerun checks affected by source, dependency, configuration, fixture, or environment changes, failures, or unresolved gaps. Do not mandate unrelated checks after every edit. Confirm parseable formats, consistent role names and path references, no stale names or paths, and no unrelated file changes. Report passed, failed, not run, and blocked checks separately, including unverified boundaries and unresolved risks.
