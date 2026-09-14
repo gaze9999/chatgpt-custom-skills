@@ -1,0 +1,9 @@
+interface:
+  display_name: "Coding Prompt"
+  short_description: "Convert coding requests into copyable agent prompts with scope, acceptance criteria, model, and reasoning guidance."
+  icon_small: "./assets/icon-small.svg"
+  icon_large: "./assets/icon.svg"
+  default_prompt: "Use $coding-prompt when the desired output is a reusable coding-agent task prompt. Preserve scope, contracts, constraints, acceptance criteria, open items, and stop conditions; do not solve the coding task directly."
+
+policy:
+  allow_implicit_invocation: true

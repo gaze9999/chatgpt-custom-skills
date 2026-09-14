@@ -8,12 +8,12 @@
 
 | Skill | 路徑 | 用途 | 主要輸出 |
 |---|---|---|---|
-| [Agent Governance Architect](./skills/agent-governance-architect/SKILL.md) | `skills/agent-governance-architect` | 盤點並重整 `AGENTS.md`、subagent 職責與指示分層，移除不必要的重複規則 | Agent / subagent 治理規範修改 |
-| [Coding Task Prompt Builder](./skills/coding-task-prompt-builder/SKILL.md) | `skills/coding-task-prompt-builder` | 將最小必要的需求、scope、contract、驗收條件與停點整理成可直接交給 coding agent 的任務 prompt | 精簡 coding task prompt |
-| [Codex Context Brief Builder](./skills/codex-context-brief-builder/SKILL.md) | `skills/codex-context-brief-builder` | 將規格書、API 文件、schema、需求文件或整合指南整理成可重複給 Codex 使用的 Markdown context brief | Codex context summary Markdown |
-| [Document Production Pipeline](./skills/document-production-pipeline/SKILL.md) | `skills/document-production-pipeline` | 將使用者內容、來源與版面需求整理成可直接交付的正式文件；未指定格式時預設 PDF | PDF；或依需求輸出 DOCX / Markdown 等支援格式 |
-| [Editorial Illustration Image Pipeline](./skills/editorial-illustration-image-pipeline/SKILL.md) | `skills/editorial-illustration-image-pipeline` | 將使用者提供的圖片、可選視覺調整與內建 base prompt 合併後，直接執行 editorial illustration 圖片生成 | 每張來源圖對應一張獨立插畫 |
-| [Post-Implementation Doc Updater](./skills/post-implementation-doc-updater/SKILL.md) | `skills/post-implementation-doc-updater` | 程式改版、PR、diff、release 或 refactor 後，更新 docs、Markdown memo、Notion memo、changelog、API reference 或 Codex context brief | 與實作變更對齊的文件／memo 更新 |
+| [Agent Governance](./skills/agent-governance/SKILL.md) | `skills/agent-governance` | 盤點並重整 `AGENTS.md`、subagent 職責與指示分層，移除不必要的重複規則 | Agent / subagent 治理規範修改 |
+| [Coding Prompt](./skills/coding-prompt/SKILL.md) | `skills/coding-prompt` | 將最小必要的需求、scope、contract、驗收條件與停點整理成可複製的 coding agent prompt，並推薦模型與 reasoning | 可複製的 coding task prompt、模型與 reasoning 建議 |
+| [Context Brief](./skills/context-brief/SKILL.md) | `skills/context-brief` | 將規格書、API 文件、schema、需求文件或整合指南整理成可重複給 Codex 使用的 Markdown context brief | Codex context summary Markdown |
+| [Document Production](./skills/document-production/SKILL.md) | `skills/document-production` | 將使用者內容、來源與版面需求整理成可直接交付的正式文件；未指定格式時預設 PDF | PDF；或依需求輸出 DOCX / Markdown 等支援格式 |
+| [Editorial Illustration](./skills/editorial-illustration/SKILL.md) | `skills/editorial-illustration` | 將使用者提供的圖片、可選視覺調整與內建 base prompt 合併後，直接執行 editorial illustration 圖片生成 | 每張來源圖對應一張獨立插畫 |
+| [Doc Updater](./skills/doc-updater/SKILL.md) | `skills/doc-updater` | 程式改版、PR、diff、release 或 refactor 後，更新 docs、Markdown memo、Notion memo、changelog、API reference 或 Codex context brief | 與實作變更對齊的文件／memo 更新 |
 
 ## 設計原則
 
@@ -41,18 +41,18 @@
 3. 在 **Assets** 中下載要安裝的單一 Skill ZIP，例如：
 
    ```text
-   agent-governance-architect.zip
-   coding-task-prompt-builder.zip
-   codex-context-brief-builder.zip
-   document-production-pipeline.zip
-   editorial-illustration-image-pipeline.zip
-   post-implementation-doc-updater.zip
+   agent-governance.zip
+   coding-prompt.zip
+   context-brief.zip
+   document-production.zip
+   editorial-illustration.zip
+   doc-updater.zip
    ```
 
 4. 不要自行解壓縮。ZIP 內應保留該 Skill 的完整目錄內容，例如：
 
    ```text
-   document-production-pipeline/
+   document-production/
    ├── SKILL.md
    ├── agents/
    │   └── openai.yaml
@@ -79,7 +79,7 @@ Skill path: skills/<skill-name>
 
 ```text
 Repository: gaze9999/chatgpt-custom-skills
-Skill path: skills/document-production-pipeline
+Skill path: skills/document-production
 ```
 
 各 Skill 可獨立安裝；不需要一次載入整個 `skills/` 目錄。
@@ -100,8 +100,8 @@ cd chatgpt-custom-skills
 每個 ZIP 的頂層應直接包含單一 Skill 目錄，例如：
 
 ```text
-document-production-pipeline.zip
-└── document-production-pipeline/
+document-production.zip
+└── document-production/
     ├── SKILL.md
     ├── agents/
     │   └── openai.yaml
@@ -113,7 +113,7 @@ Release assets 建議保持與 Skill 目錄相同的 basename，方便辨識與�
 
 ## 使用方式
 
-### Agent Governance Architect
+### Agent Governance
 
 適合處理：
 
@@ -123,17 +123,17 @@ Release assets 建議保持與 Skill 目錄相同的 basename，方便辨識與�
 
 此 Skill 聚焦在 agent governance，不應順便修改 production code。
 
-### Coding Task Prompt Builder
+### Coding Prompt
 
 適合處理：
 
 ```text
-把這個需求整理成可以直接交給 coding agent 的 task prompt，保留 scope、contract、acceptance criteria 與 stop conditions。
+把這個需求整理成可以直接交給 coding agent 的 task prompt，保留 scope、contract、acceptance criteria 與 stop conditions，並推薦模型與 reasoning。
 ```
 
-輸出重點是任務本身，不重複一般 coding style、repo 已存在的規則或可直接查得的版本資訊。
+輸出包含一個手機 App 與桌面／Web 都能直接複製的 prompt 區塊，後面附上模型與 reasoning 建議；不重複一般 coding style、repo 已存在的規則或可直接查得的版本資訊。
 
-### Codex Context Brief Builder
+### Context Brief
 
 適合處理：
 
@@ -143,7 +143,7 @@ Release assets 建議保持與 Skill 目錄相同的 basename，方便辨識與�
 
 此 Skill 聚焦在長文件壓縮成可重用 Codex 背景，不負責直接實作，也不取代單次任務 prompt。輸出應保留實作契約、限制、例外情境與來源追蹤，避免之後每次都重新貼完整規格書。
 
-### Document Production Pipeline
+### Document Production
 
 未指定輸出格式時預設產生 PDF；使用者可以明確要求 DOCX、Markdown 或多格式輸出。
 
@@ -161,7 +161,7 @@ Release assets 建議保持與 Skill 目錄相同的 basename，方便辨識與�
 
 Pipeline 會依 `references/document-production-guidelines.md` 處理檔名、文件版本、目錄、分頁、表格、引用與最終 QA，並直接交付文件 artifact。
 
-### Editorial Illustration Image Pipeline
+### Editorial Illustration
 
 使用時提供一張或多張來源圖片，可再用自然語言補充當次調整，例如：
 
@@ -180,7 +180,7 @@ Pipeline 會將：
 
 每張來源圖片獨立處理，不把多張圖片自動合併成 collage；正常流程直接輸出圖片，不另外輸出組裝後的 prompt。
 
-### Post-Implementation Doc Updater
+### Doc Updater
 
 適合處理：
 
