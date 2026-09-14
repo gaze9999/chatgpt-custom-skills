@@ -1,0 +1,9 @@
+interface:
+  display_name: "Post-Implementation Doc Updater"
+  short_description: "Align existing docs or memos only when explicit code-change evidence and targets are present."
+  icon_small: "./assets/icon-small.svg"
+  icon_large: "./assets/icon.svg"
+  default_prompt: "Use $post-implementation-doc-updater only when the user explicitly asks to update or sync existing documentation or memos from concrete implementation evidence available in the current task, such as a diff, commit, PR, release, migration, completed refactor, changed-file list, or pasted code-change summary. Require an identifiable doc or memo target. Do not use it for general Notion work, ordinary document generation, pre-implementation spec/API summarization, direct coding, or coding prompts. Do not use Notion unless a Notion target is explicitly in scope. Update both Notion and Markdown only when both targets are explicitly requested or a confirmed bidirectional sync marker exists."
+
+policy:
+  allow_implicit_invocation: true

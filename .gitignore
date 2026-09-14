@@ -1,0 +1,61 @@
+# Repository-local automation / agent configuration
+/.github/
+/.codex/
+/AGENTS.md
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Dependencies / generated output
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+.tmp/
+tmp/
+temp/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Archives / temporary release packages
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Local working files
+*.tmp
+*.temp

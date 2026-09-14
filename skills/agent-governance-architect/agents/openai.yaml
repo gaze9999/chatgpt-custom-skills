@@ -1,0 +1,9 @@
+interface:
+  display_name: "Agent Governance Architect"
+  short_description: "Simplify agent governance and reduce token overhead."
+  icon_small: "./assets/icon-small.svg"
+  icon_large: "./assets/icon.svg"
+  default_prompt: "Use $agent-governance-architect to simplify agent rules and minimize total tokens at equal quality, preferring primary-agent execution when delegation offers no clear savings or required quality benefit."
+
+policy:
+  allow_implicit_invocation: true

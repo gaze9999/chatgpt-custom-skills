@@ -1,0 +1,9 @@
+interface:
+  display_name: "Document Production Pipeline"
+  short_description: "Create finished downloadable document artifacts only when file output is explicitly requested."
+  icon_small: "./assets/icon-small.svg"
+  icon_large: "./assets/icon.svg"
+  default_prompt: "Use $document-production-pipeline only when the user explicitly wants a finished downloadable document artifact such as PDF, DOCX, Markdown, or multi-format output. Do not use it for brief chat answers, ordinary summaries, translation, proofreading, document planning, reusable Codex context briefs, post-implementation doc updates, Notion organization, spreadsheets-only work, image generation, direct coding, or coding task prompts."
+
+policy:
+  allow_implicit_invocation: true

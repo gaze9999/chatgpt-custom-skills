@@ -1,0 +1,9 @@
+interface:
+  display_name: "Editorial Illustration Image Pipeline"
+  short_description: "Generate editorial illustrations from uploaded images"
+  icon_small: "./assets/icon-small.svg"
+  icon_large: "./assets/icon.svg"
+  default_prompt: "Use $editorial-illustration-image-pipeline to transform each uploaded image into a standalone editorial illustration using the bundled base art direction and my optional adjustments."
+
+policy:
+  allow_implicit_invocation: true
