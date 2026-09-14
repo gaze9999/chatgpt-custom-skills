@@ -29,6 +29,8 @@ Place agent instructions at the correct layer with the smallest rule set that pr
 - Retain a rule only when it is specific, durable, behavior-changing, correctly placed, and not duplicated. Otherwise remove or compress it.
 - Write newly created or substantially rewritten agent instructions in concise English for token efficiency. Preserve the project language when it is an established requirement or the user explicitly requests it; never sacrifice precision, safety, or contract clarity for brevity.
 - Start context narrowly: read only governance files and evidence directly relevant to the change. Expand only when the available evidence cannot establish the boundary or correctness. Do not attach full conversations or unrelated tool output to handoffs.
+- Replace unconditional document-reading checklists with explicit loading triggers. Follow applicable instructions, reuse relevant content still available in context absent evidence of change, and load missing or affected sections when scope changes, evidence conflicts, or a decision requires them. Preserve mandatory reads; do not use caching to bypass instruction scope or precedence.
+- Keep context briefs for orientation and authoritative source pointers for contract questions. Avoid duplicating implementation details, acceptance matrices, or validation commands across governance, briefs, and task prompts when a maintained reference suffices.
 - Apply the execution policy below to this workflow and the governance rules being edited. Preserve explicit delegation requirements and project ownership boundaries.
 - Make reasonable assumptions for routine, reversible details. Stop for user input only when missing information affects authorization, contract preservation, irreversible impact, or a required decision; keep other uncertainty explicit.
 - Do not invent roles, capabilities, routing, or future behavior. Update every reference when renaming a role.
@@ -46,4 +48,4 @@ Place agent instructions at the correct layer with the smallest rule set that pr
 
 ## Delivery and verification
 
-Run the narrowest meaningful checks first. Confirm parseable formats, consistent role names and path references, no stale names or paths, and no unrelated file changes. Report passed, failed, not run, and unverified checks separately, including unresolved risks.
+Run the narrowest meaningful checks first and preserve required project gates. Reuse applicable results; rerun checks affected by source, dependency, configuration, fixture, or environment changes, failures, or unresolved gaps. Do not mandate unrelated checks after every edit. Confirm parseable formats, consistent role names and path references, no stale names or paths, and no unrelated file changes. Report passed, failed, not run, and blocked checks separately, including unverified boundaries and unresolved risks.
