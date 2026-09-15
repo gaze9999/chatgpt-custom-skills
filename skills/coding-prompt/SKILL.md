@@ -7,59 +7,49 @@ metadata:
 
 # Coding Prompt
 
-Turn user-provided task information into a prompt that can be handed directly to a coding agent. This Skill produces the prompt; it does not perform the coding task. Current user instructions take precedence over this Skill's defaults.
+Create a handoff-ready prompt from the user's task information. Do not execute the task. User instructions override these defaults.
 
-## Inputs
+## Compose the task
 
-Required: `GOAL`.
+- Use the supplied goal, scope, evidence, contracts, constraints, acceptance criteria, and destination. Request missing information only when it materially affects the handoff.
+- Preserve the requested deliverable and authority boundary. Reviews, diagnoses, and plans remain read-only unless implementation is requested. Do not add external actions or expand scope.
+- Use supplied or already-loaded evidence. Inspect additional sources only when the user asks to incorporate them; do not scan a repository merely to shorten a prompt.
+- State the intended behavior change, contracts to preserve, and observable acceptance criteria. Do not invent APIs, paths, versions, commands, mappings, or results.
+- Keep uncertainty explicit. Block only work that depends on missing authorization, contracts, or required decisions; preserve independent work.
+- Consolidate repeated requirements without weakening them. Retain prerequisites, exact messages, boundary values, regression cases, required checks, and stop points. Preserve wording verbatim only when requested or contractually significant.
 
-Optional: `TASK_TYPE`, `EVIDENCE`, `SCOPE`, `CONTRACT`, `CONSTRAINTS`, `ACCEPTANCE`, `UNKNOWNS`, and `FILE_HINTS`.
+## Match the execution context
 
-## Rules
+- Judge where the prompt will run, not where it is written.
+- In a known project with applicable instructions available, omit AGENTS.md reminders and duplicated reading triggers, Git, style, safety, and routine verification rules. Keep task-specific exceptions, branch expectations, ownership, and concurrent-work facts. Omission does not waive project rules.
+- A prompt written outside the project but executed inside it needs the supplied project identity, not a copy of its rules. Referenced documents are read when applicable, not automatically in full.
+- For an unknown or non-project destination, include enough supplied context, source pointers, constraints, and acceptance criteria to stand alone. Do not assume access to this chat, local files, tools, or instructions. If a repository is available but instruction discovery is uncertain, a brief instruction to discover applicable guidance is sufficient.
 
-- Identify the requested deliverable and encode its authority boundary. Treat answers, reviews, diagnoses, and plans as read-only unless changes are explicitly requested.
-- Do not inspect or modify the target repository, application, or external systems beyond evidence the user explicitly asked to incorporate into the prompt.
-- Keep task-specific goals, constraints, evidence pointers, and observable acceptance criteria. Reference established repository rules instead of copying them; omit generic process checklists and facts the agent can inspect directly.
-- Do not expand scope, rewrite contracts, or convert unknowns into facts.
-- For implementation prompts, require the smallest coherent change that preserves existing behavior, interfaces, and local conventions unless the task requires otherwise.
-- Mark an unknown as a blocker only when it prevents authorization, contract preservation, or a required decision; otherwise make it an open item.
-- Acceptance criteria must be observable. Do not invent APIs, files, versions, commands, or verification results.
-- Preserve explicit prerequisites, regression cases, boundary values, and stop conditions. When separate batches are requested, keep their scopes and handoffs separate; do not combine a stop instruction with an implicit continuation.
-- Do not require commit, push, merge, deployment, external messages, or unrelated cleanup unless explicitly requested.
+## Scope verification and handoff
 
-## Model and reasoning recommendation
+- Preserve requested checks and project gates. Otherwise match verification to behavior and risk; avoid unrelated checklists.
+- Reference relevant existing tests or matrices while retaining new cases and expected outcomes. Reuse evidence only within its source and environment limits; require fresh checks where changes, failures, or gaps invalidate it. Component or fixture results do not prove live integration.
+- Use original specifications for exact contracts or conflicting evidence; briefs and history provide orientation. Avoid blanket rereads.
+- Include documentation targets or timing when requested or task-specific; do not duplicate established maintenance rules or broaden authorization.
+- Keep separate batches and stop points distinct. Scale the output structure to the task and omit empty sections.
 
-- Finish composing the complete handoff-ready prompt before choosing a model or reasoning level. Assess the task expressed by that prompt, not the length or wording of the original request.
-- Consider scope, ambiguity, risk, required repository discovery, cross-module coordination, implementation depth, and verification burden. Prefer the least demanding option expected to meet the required quality, considering likely rework and total execution effort; do not assume a smaller model guarantees token savings.
-- Evaluate the GPT-5.6 options first. Use these starting points, not mandatory pairs:
-  - `gpt-5.6-luna` with `low` for small, local, well-specified, low-risk work.
-  - `gpt-5.6-sol` with `medium` for ordinary implementation, debugging, or review work.
-  - `gpt-5.6-terra` with `medium` as another candidate for everyday coding-agent work centered on repository discovery, implementation, and focused verification. Compare it with Sol using task fit and available project evidence; do not assume a fixed capability or cost ranking.
-  - `gpt-6-astra` with `high` only when substantial ambiguity, cross-module coordination, implementation depth, risk, or multi-step agentic demands justify escalation beyond the GPT-5.6 options. File count or multiple steps alone do not justify escalation.
-- Choose model and reasoning independently; a bounded but demanding task may justify `gpt-5.6-sol` with `high`. Use `xhigh` only when the completed prompt demonstrates a concrete benefit worth the extra latency. Do not default to GPT-6 or maximum reasoning.
-- Separate availability from suitability: first identify which candidates the target environment supports, then compare every supported candidate against the same task-fit criteria. Do not treat the model currently executing this Skill, the current chat model, or that model's self-assessment as availability or suitability evidence, and do not prefer it by default. Recommend it only when independent target-environment evidence shows it is available and the task comparison supports it. If the target environment is unspecified, state the availability uncertainty instead of inferring support from the current session.
-- Recommend one model and one supported reasoning level using current availability evidence from the target environment or official documentation. Treat the examples as preferences, not proof of client availability; state uncertainty or substitute the nearest supported option only when needed. A recommendation does not authorize changing configuration or spawning agents.
+## Recommend a model and reasoning
 
-## Context and verification scope
+- Complete the prompt first. Assess the resulting task and executor's role, uncertainty, risk, context, tools, coordination, and verification burden.
+- Preserve explicit user selections. Otherwise recommend one supported model and reasoning combination using target-environment evidence or current official documentation. State unresolved availability rather than assuming the current session represents the destination.
+- Establish required quality before comparing latency and total task cost, including handoffs, retries, and integration. Treat unmeasured advantages as tentative. Do not use fixed model rankings, escalation chains, or assume equal reasoning labels mean equal capability across models.
+- Diagnose missing context, unclear requirements, and tool or environment failures before attributing difficulty to model capability. The currently running model is not a preference by default.
+- A recommendation does not switch models, change configuration, or authorize delegation. Include worker ownership and integration responsibilities only when the task actually calls for delegation.
 
-Apply these criteria when composing the prompt; do not paste this section as boilerplate:
+## Output
 
-- Require compliance with applicable instructions without adding a blanket reread of AGENTS.md, context briefs, guidance, or validation documents. Reuse relevant content already available in the working context when there is no evidence of change; load missing material or affected sections when scope changes, conflicting evidence appears, or a decision needs it. Preserve explicit mandatory reads.
-- Treat context briefs as orientation and historical reports as evidence for their recorded source and environment. Point to relevant cases or sections; consult original specifications when exact contracts, codes, mappings, or contradictions require them. Do not require reprocessing all source documents for every batch.
-- When existing or concurrent work matters, retain branch/status and staged/unstaged change-scope checks. Focus detailed diff review on target files and affected dependencies while preserving all existing work.
-- Preserve requested checks and required project gates. Otherwise choose validation by changed behavior and risk; reuse applicable results and rerun checks affected by source, dependency, configuration, fixture, or environment changes, failures, or unresolved gaps. Do not expand unrelated validation solely because a source file changed.
-- Reference existing test entry points or matrices when supplied, retaining task-specific additions and expected behavior. Distinguish passed, failed, not run, and blocked checks when relevant; component or fixture results do not establish live integration success.
-- Include documentation maintenance only when requested or required by applicable project instructions, scoped to affected claims and authorized targets.
-
-## Output format
-
-Output exactly these sections, in this order:
+Use concise English by default unless the user requests another language or the target project requires it. Follow the user's requested format; otherwise return:
 
 ```text
-[the complete handoff-ready prompt]
+[complete handoff-ready prompt]
 ```
 
 Model recommendation: `<model>`
 Reasoning: `<effort>`
 
-Put the entire prompt inside one Markdown fenced code block so the ChatGPT mobile app and desktop/web clients expose a reliable copy action. Do not put the model or reasoning recommendation inside the copyable block. Keep the prompt itself concise, omit empty optional fields, and write it in concise English by default unless the user explicitly requests another language or the target project requires it. If the prompt needs an internal code block, use a different fence marker such as `~~~` so the outer copyable block remains intact.
+Keep the complete prompt in one copyable fenced block, with the recommendation outside it. Use a different fence marker for nested code. Add a brief availability qualification only when needed.
