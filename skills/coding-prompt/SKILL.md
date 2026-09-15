@@ -27,6 +27,10 @@ Create a handoff-ready prompt from the user's task information. Do not execute t
 
 ## Scope verification and handoff
 
+- Choose the fastest, simplest checks sufficient for the requested behavior. Do not add builds, browser checks, or E2E unless needed or required; a blocked test does not by itself require browser fallback.
+- Carry forward known dependency blockers and project restrictions without adding dependency repair. Skip unchanged blocked checks, continue independent verification, and report them as blocked rather than passed.
+- Preserve explicit user/project exclusions for dedicated accessibility/ARIA checks while retaining existing accessibility behavior and needed functional checks. Keep such exclusions task-specific; do not infer a universal exemption or duplicate rules already available at the destination.
+
 - Preserve requested checks and project gates. Otherwise match verification to behavior and risk; avoid unrelated checklists.
 - Reference relevant existing tests or matrices while retaining new cases and expected outcomes. Reuse evidence only within its source and environment limits; require fresh checks where changes, failures, or gaps invalidate it. Component or fixture results do not prove live integration.
 - Use original specifications for exact contracts or conflicting evidence; briefs and history provide orientation. Avoid blanket rereads.

@@ -44,6 +44,10 @@ Keep the smallest instruction set that preserves task boundaries, contracts, and
 
 ## Verify and deliver
 
+- Prefer the fastest, simplest checks sufficient for the change. Preserve explicit requirements and project gates; do not add builds, browser checks, or E2E as routine ceremony. Use functional browser checks when the changed behavior needs them, not merely because another check is blocked.
+- Preserve project dependency restrictions. Report and skip checks blocked by missing dependencies; do not retry an unchanged blocker or install, repair, or upgrade dependencies without authorization. Continue independent checks and never count a skipped check as passed.
+- Keep validation preferences at their proper scope. If the user or project excludes dedicated accessibility/ARIA checks, preserve that exclusion without weakening existing accessibility behavior or necessary functional checks. Do not turn one project's exclusion into a global default. Keep current missing-package status in task context rather than permanent rules.
+
 - Review the final changes and run relevant format, reference, and configuration checks. Check renamed roles and their callers, and inspect ignored governance files directly. Preserve required project gates without adding unrelated application checks.
 - Verify synchronized copies when requested. Do not claim runtime loading, behavior improvement, or cost savings from syntax checks alone.
 - Report changed files, key decisions, actual checks, unresolved assumptions, and unverified boundaries in a task-proportionate format. Separate passed, failed, not-run, and blocked checks where relevant.
