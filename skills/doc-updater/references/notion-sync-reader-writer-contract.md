@@ -1,12 +1,12 @@
 # Notion Sync Reader and Writer Contract
 
-Use this contract only for a concrete implementation-backed documentation update after the Doc Updater activation gate has passed.
+Use this contract only when the user explicitly requests Notion work for an implementation-backed documentation update. Local-only updates do not require this workflow.
 
 ## Scope and access
 
 - Use an explicit uploaded Notion JSON snapshot for offline reading, or the available Notion connector / first-party tool for live reading and writing. Do not add a personal access token, secret, or connector credential to this repository, a script argument, a document, or a log.
 - Read or write only a page, database item, or memo named by the user, linked by the explicit Markdown target, or already identified in the current task.
-- A Markdown reference authorizes Notion access only when its metadata contains a concrete `notion_page_id` and `sync_mode: bidirectional`; a URL alone requires user confirmation.
+- Links, page IDs, and `sync_mode: bidirectional` identify targets but do not authorize access. Resume paused synchronization only on explicit user request, comparing current content before any write.
 - Do not search, crawl, enumerate, or classify a broad Notion workspace to discover a sync target.
 
 ## Reader procedure

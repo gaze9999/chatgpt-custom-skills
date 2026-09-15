@@ -98,39 +98,19 @@ Choose the smallest documentation surface that keeps knowledge aligned.
 
 Do not create a new documentation surface unless the user asks for a new doc/memo or no existing target can represent the necessary update. Prefer patching the smallest existing section.
 
-## Notion usage gate
+## Local-first documentation and Notion
 
-Do not search, read, or update broad Notion workspaces just because Notion is connected or mentioned near docs/memo/sync language.
+Update local documentation by default. Access Notion only when the user explicitly requests it. General sync wording, an existing page target, links, or bidirectional metadata do not authorize Notion access or resume paused synchronization.
 
-Use Notion only when at least one condition is true:
+Complete authorized local updates without waiting for Notion. Preserve relationship metadata, but do not change Notion sync timestamps or claim remote alignment. If a counterpart exists, report it as intentionally not synchronized.
 
-- the user explicitly asks to update a Notion page, Notion database item, or Notion memo for the implementation change
-- the user provides a specific Notion target or the current context already contains one
-- existing Markdown metadata clearly links the target to Notion, such as `notion_page_id`
+When the user explicitly requests Notion synchronization:
 
-If Notion is not explicitly in scope, leave it unchanged and state that only repo / Markdown documentation was updated.
-
-## Markdown and Notion sync
-
-Prefer Markdown as canonical when the content belongs to a repo and should be versioned.
-
-Use Notion as canonical only when the user says the Notion page or database is the source of truth.
-
-Update both Markdown and Notion only when at least one condition is true:
-
-- the user explicitly asks to update both Markdown and Notion
-- the user provides both Markdown and Notion targets for the same implementation-backed update
-- existing metadata clearly indicates bidirectional sync, such as `notion_page_id` plus `sync_mode: bidirectional`
-
-If only one side is named, update only that side and state that the other side was intentionally left unchanged.
-
-When both Markdown and Notion need updates:
-
-1. Identify the canonical source.
-2. Update the canonical source first.
-3. Mirror or summarize the relevant content to the secondary surface.
-4. Preserve page IDs, frontmatter, URLs, and sync metadata when present.
-5. If both sides changed independently, do not overwrite automatically; produce a conflict note.
+1. Confirm the exact targets and canonical source; use Notion as canonical only when the user specifies it.
+2. Read current content and compare relevant sections before writing. Follow `notion-sync-reader-writer-contract.md`.
+3. Resolve independent changes without blindly overwriting either side.
+4. Make the smallest authorized update and preserve unrelated content, page IDs, links, and metadata.
+5. Verify each updated target and distinguish local completion from remote synchronization.
 
 ## Safe update style
 
@@ -153,6 +133,6 @@ Before finalizing, confirm:
 - important no-update decisions are recorded
 - breaking changes and migrations are clearly marked
 - Notion was only used when explicitly in scope
-- dual Notion / Markdown updates were explicitly authorized or supported by sync metadata
+- dual Notion / Markdown updates were explicitly requested by the user
 - Notion and Markdown targets are semantically aligned when both are updated
 - unverified items are explicitly labeled

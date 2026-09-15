@@ -26,13 +26,14 @@ When evidence or a target is missing, request only the information needed for co
 - Read only the necessary diff and target sections, then make the smallest supported change. Do not promote internal details to public guarantees or add secrets or unnecessary personal data.
 - Run `scripts/scan_changed_files.py --repo <repo-root>` when impact discovery is needed. For multiple targets, use [Doc Update Rules](references/doc-update-rules.md) and validate the concise plan with `scripts/validate_doc_update_plan.py`.
 
-## Notion and Markdown
+## Local-first updates
 
-- Do not read or write Notion unless Notion is explicitly requested.
-- Only access a precise Notion target when the user identifies it or the Markdown target has an explicit relationship. Follow [Notion Sync Reader and Writer Contract](references/notion-sync-reader-writer-contract.md).
-- Do not synchronize both systems by default. Do so only with explicit authorization, both targets, or `sync_mode: bidirectional` in Markdown.
-- Before writing, use the relevant `inspect_*` script. For Markdown replacement, dry-run and verify SHA-256 first. Re-read a live Notion target immediately after writing.
+- Update local documentation by default. Do not read or write Notion unless the user explicitly requests Notion work; a general documentation-sync request is not enough.
+- Existing page links, paired targets, prior sync arrangements, and `sync_mode: bidirectional` identify relationships, not permission to resume paused Notion synchronization.
+- Complete authorized local updates without waiting for Notion access or alignment. Preserve sync metadata, but do not advance Notion sync timestamps or claim both copies are aligned.
+- When the user explicitly resumes Notion synchronization, confirm the exact targets and compare current content before writing. Follow [Notion Sync Reader and Writer Contract](references/notion-sync-reader-writer-contract.md); do not blindly overwrite changes accumulated while sync was paused.
+- For Markdown replacement, use the relevant inspection script, dry-run, and SHA-256 check before writing.
 
 ## Delivery
 
-Report the evidence used, updated targets, no-update decisions, Notion and Markdown synchronization outcome, and completed or skipped checks.
+Report evidence, local files changed, no-update decisions, and actual checks. When a Notion counterpart is relevant, state that it was intentionally not synchronized; do not treat this as a blocker for completed local work.
