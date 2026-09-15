@@ -1,59 +1,46 @@
 ---
 name: agent-governance
-description: Audit, simplify, and restructure repository AGENTS.md and subagent guidance; retain only project- or role-specific, durable rules that change behavior.
+description: Audit, simplify, and restructure agent instructions and subagent guidance for a project or a portable handoff.
 metadata:
   short-description: Agent governance, role boundaries, and instruction minimization
 ---
 
 # Agent Governance
 
-Place agent instructions at the correct layer with the smallest rule set that preserves execution, ownership boundaries, and safety. Prefer removing, moving, or compressing rules over adding them. Current user instructions take precedence over this Skill's defaults.
+Keep the smallest instruction set that preserves task boundaries, contracts, and useful project knowledge. Prefer removing, merging, or relocating rules over adding them. User instructions override these defaults.
 
-## Scope
+## Scope and evidence
 
-- By default, modify only `AGENTS.md`, `.codex/agents/*`, `agents/*`, and directly related governance documents.
-- Do not modify application code, dependencies, build, or deployment configuration unless explicitly requested.
-- Treat audits, reviews, diagnoses, plans, and recommendations as read-only. Edit governance only when the user requests a change.
-- When repository structure must be verified, run `scripts/scan_repo_structure.py`. Treat observable configuration and implementation as evidence, not document claims.
+- Keep audits and recommendations read-only; edit only when requested. Default edit scope is AGENTS.md, role configuration, and directly related governance documents. Do not expand into application code, dependencies, deployment, or external actions.
+- Read the target guidance and relevant diffs before editing; preserve existing work. Start with narrow evidence and expand only to resolve a material gap. Use `scripts/scan_repo_structure.py` when a structural inventory is useful, not as a mandatory step.
+- Check current official OpenAI documentation for discovery, configuration, or model behavior being changed. Reuse applicable evidence already in context; distinguish documented behavior, project observations, and tentative recommendations.
+- Write concise English unless the user or project requires another language. Preserve substantive constraints when shortening; do not invent roles, capabilities, paths, or results.
 
-## Layering
+## Match the target context
 
-- Global instructions contain only cross-repository, durable principles.
-- Repository `AGENTS.md` contains only project-specific architecture, ownership, verification, and safety constraints.
-- Subagent guidance contains only role differences, handoff content, and exclusions. The primary agent retains integration and final decisions.
-- One-off requirements, migration details, and temporary restrictions belong in the current task prompt.
+- Judge where the guidance will apply, not just where this Skill runs.
+- Inside a known project, use applicable instructions and current evidence. Remove duplicated inherited rules and blanket reading reminders; retain project-specific constraints and task-triggered references. Omission does not waive inherited requirements.
+- Outside the project but preparing guidance for it, identify the supplied target and its known instruction layers. Do not copy project rules merely because authoring happens elsewhere. Verify files when accessible and authorized; otherwise label the result as a draft and identify unverified assumptions.
+- For non-project or unknown environments, keep guidance self-contained and portable. Include only supplied constraints and necessary discovery directions; do not assume local files, tools, automatic AGENTS.md loading, or shared chat history. Clarify missing information only when it changes scope, placement, or correctness.
 
-## Operating rules
+## Place and simplify rules
 
-- Before changing agent guidance, consult current official OpenAI documentation, then apply explicit user instructions and verified project constraints.
-- Retain a rule only when it is specific, durable, behavior-changing, correctly placed, and not duplicated. Otherwise remove or compress it.
-- Write newly created or substantially rewritten agent instructions in concise English for token efficiency. Preserve the project language when it is an established requirement or the user explicitly requests it; never sacrifice precision, safety, or contract clarity for brevity.
-- Start context narrowly: read only governance files and evidence directly relevant to the change. Expand only when the available evidence cannot establish the boundary or correctness. Do not attach full conversations or unrelated tool output to handoffs.
-- Replace unconditional document-reading checklists with explicit loading triggers. Follow applicable instructions, reuse relevant content still available in context absent evidence of change, and load missing or affected sections when scope changes, evidence conflicts, or a decision requires them. Preserve mandatory reads; do not use caching to bypass instruction scope or precedence.
-- Keep context briefs for orientation and authoritative source pointers for contract questions. Avoid duplicating implementation details, acceptance matrices, or validation commands across governance, briefs, and task prompts when a maintained reference suffices.
-- Apply the execution policy below to this workflow and the governance rules being edited. Preserve explicit delegation requirements and project ownership boundaries.
-- Make reasonable assumptions for routine, reversible details. Stop for user input only when missing information affects authorization, contract preservation, irreversible impact, or a required decision; keep other uncertainty explicit.
-- Do not invent roles, capabilities, routing, or future behavior. Update every reference when renaming a role.
-- Do not commit, push, merge, deploy, send external messages, or perform unrelated cleanup unless explicitly requested.
+- Global guidance holds durable cross-project preferences; repository guidance holds project-specific contracts and ownership; role files hold role differences; task prompts hold temporary scope and acceptance criteria.
+- Keep a rule when it changes a meaningful decision, belongs at that layer, and is not reliably recoverable from source or tools. Merge repetition without weakening explicit requirements; retain exact wording when contractually significant.
+- Replace blanket rereads with relevant loading triggers. Linked references are not automatically loaded in full. Keep briefs for orientation and authoritative sources for contract questions.
+- Prefer existing formatters, tests, linters, or CI for mechanically enforceable checks. Do not add tooling or dependencies merely to reorganize instructions.
+- Preserve safety, authorization, and public-contract boundaries. Avoid turning a past failure into a universal workflow or forcing fixed handoff formats, history lengths, task transitions, or output quotas without a concrete need.
 
-## Token-aware execution
+## Delegation and model selection
 
-- Minimize expected total tokens while preserving correctness, contracts, and required verification. Prefer the primary agent when quality is comparable and delegation is unlikely to save tokens; use it as the default when savings are unclear.
-- Make a brief qualitative comparison using available context: primary execution versus worker context and reasoning, handoff, repeated reads, coordination, integration, verification, and likely rework. Smaller main-thread context, lower model prices, and faster parallel completion do not alone prove fewer total tokens. Do not run a benchmark or produce a cost report unless requested.
-- Keep small, tightly coupled, or already-understood work in the primary agent, including difficult tasks that a short deterministic check can resolve. Difficulty, file count, and role availability alone do not justify delegation.
-- Delegate a bounded, independent slice when context isolation is expected to reduce total tokens at equal quality, or when necessary expertise or independent review materially improves required quality. Preserve explicit user requests; do not remove mandatory specialist or review boundaries merely to save tokens.
-- Prefer one specialist and reuse it for related work. Use additional workers only for disjoint scopes with a clear benefit; do not recursively delegate without an explicit request.
-- Pass only the goal, contracts, owned paths, evidence pointers, constraints, acceptance criteria, and stop condition. Use `fork_turns: none` when supported; never pass full history. Request concise results, evidence locations, changed files, and verification gaps. Reuse verified findings; recheck only drift, contradictions, or material gaps instead of repeating the worker's task.
-- Keep estimates separate from measured usage. Do not infer token savings or equal quality from elapsed time, answer length, or one small test. Never reduce required validation to satisfy an unmeasured token target.
+- Prefer one agent for small or tightly coupled work. Delegate authorized, bounded work when quality, elapsed time, or context isolation benefits outweigh coordination and integration costs; role availability alone is insufficient.
+- Parallelize independent work with clear ownership. Give workers the goal, necessary context, contracts, evidence pointers, constraints, acceptance criteria, and stop point. Use supported context-sharing options suited to the task. The primary agent owns integration and final acceptance; reuse verified findings and recheck material gaps or drift.
+- Keep stable model-selection criteria in guidance and concrete defaults in maintained configuration. Preserve explicit user choices. Do not impose model rankings, fixed escalation chains, or profiles based solely on role labels.
+- Assess model and reasoning together for the actual task, uncertainty, risk, tools, context, and verification burden. Meet quality requirements first, then compare latency and total cost, including retries and coordination. Treat unmeasured advantages as tentative.
+- Verify supported combinations in the target environment or current official documentation. Diagnose missing context, unclear requirements, and environment failures before attributing difficulty to model capability. A recommendation does not switch models or authorize delegation or configuration changes.
 
-## Model and reasoning governance
+## Verify and deliver
 
-- Keep durable selection criteria in governance, concrete model defaults in task-specific guidance or maintained configuration, and each task's recommendation with its handoff. Do not copy a model catalog into every role or AGENTS.md.
-- Complete the task scope, constraints, acceptance criteria, and handoff-ready prompt before recommending a model or reasoning level. Judge the resulting task's ambiguity, risk, repository discovery, cross-module coordination, implementation depth, and verification burden; original request length is not a proxy for difficulty.
-- Evaluate suitable GPT-5.6 options, including Luna, Sol, and Terra when available, before GPT-6. Compare task fit and available project evidence without imposing a fixed ranking among them. Prefer the least demanding option expected to preserve required quality, accounting for discovery, coordination, verification, and likely rework. Escalate only for concrete task demands; complexity labels, file count, or multiple steps alone are insufficient. Treat this preference as revisable guidance, not a permanent capability ranking.
-- Choose model and reasoning independently within currently supported combinations. Increase reasoning when the task needs deeper analysis without automatically upgrading the model; reserve `xhigh` for an identifiable benefit that justifies added latency. Preserve explicit user selections.
-- When a recommendation is requested, provide one currently available model and one reasoning level based on environment evidence or current official documentation, stating any unresolved availability limit. Model selection does not itself justify delegation or authorize configuration changes.
-
-## Delivery and verification
-
-Run the narrowest meaningful checks first and preserve required project gates. Reuse applicable results; rerun checks affected by source, dependency, configuration, fixture, or environment changes, failures, or unresolved gaps. Do not mandate unrelated checks after every edit. Confirm parseable formats, consistent role names and path references, no stale names or paths, and no unrelated file changes. Report passed, failed, not run, and blocked checks separately, including unverified boundaries and unresolved risks.
+- Review the final changes and run relevant format, reference, and configuration checks. Check renamed roles and their callers, and inspect ignored governance files directly. Preserve required project gates without adding unrelated application checks.
+- Verify synchronized copies when requested. Do not claim runtime loading, behavior improvement, or cost savings from syntax checks alone.
+- Report changed files, key decisions, actual checks, unresolved assumptions, and unverified boundaries in a task-proportionate format. Separate passed, failed, not-run, and blocked checks where relevant.
