@@ -131,7 +131,7 @@ Release assets 建議保持與 Skill 目錄相同的 basename，方便辨識與�
 把這個需求整理成可以直接交給 coding agent 的 task prompt，保留 scope、contract、acceptance criteria 與 stop conditions，並推薦模型與 reasoning。
 ```
 
-輸出包含一個手機 App 與桌面／Web 都能直接複製的 prompt 區塊，後面附上模型與 reasoning 建議；不重複一般 coding style、repo 已存在的規則或可直接查得的版本資訊。
+輸出包含一個獨立的 `text` 程式碼區塊，手機 App 可用程式碼區塊的複製控制項一次複製完整 prompt；模型與 reasoning 建議會放在區塊後方。不重複一般 coding style、repo 已存在的規則或可直接查得的版本資訊。
 
 ### Context Brief
 

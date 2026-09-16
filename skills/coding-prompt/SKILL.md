@@ -56,4 +56,4 @@ Use concise English by default unless the user requests another language or the 
 Model recommendation: `<model>`
 Reasoning: `<effort>`
 
-Keep the complete prompt in one copyable fenced block, with the recommendation outside it. Use a different fence marker for nested code. Add a brief availability qualification only when needed.
+Treat the complete prompt as a mobile-copyable payload: place it by itself in one `text` fenced code block, with no list marker, block quote, table, or explanatory text inside or immediately around that block. This lets the ChatGPT mobile app's code-block copy control copy the entire prompt in one action. Keep the recommendation outside the block. Use a different fence marker for nested code. Add a brief availability qualification only when needed.
