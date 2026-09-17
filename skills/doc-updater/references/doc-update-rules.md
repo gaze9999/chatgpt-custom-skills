@@ -104,9 +104,9 @@ Update local documentation by default. Access Notion only when the user explicit
 
 Complete authorized local updates without waiting for Notion. Preserve relationship metadata, but do not change Notion sync timestamps or claim remote alignment. If a counterpart exists, report it as intentionally not synchronized.
 
-When the user explicitly requests Notion synchronization:
+When the user explicitly requests Notion synchronization, that request authorizes the identified targets; do not request duplicate confirmation:
 
-1. Confirm the exact targets and canonical source; use Notion as canonical only when the user specifies it.
+1. Resolve the exact targets and canonical source from the request and current task; ask only when ambiguity would change scope or overwrite risk. Use Notion as canonical only when the user specifies it.
 2. Read current content and compare relevant sections before writing. Follow `notion-sync-reader-writer-contract.md`.
 3. Resolve independent changes without blindly overwriting either side.
 4. Make the smallest authorized update and preserve unrelated content, page IDs, links, and metadata.

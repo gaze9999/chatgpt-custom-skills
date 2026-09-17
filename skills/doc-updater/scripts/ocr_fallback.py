@@ -46,7 +46,7 @@ def _ocr_with_rapidocr(image_path: Path) -> tuple[str, float | None]:
 def _ocr_with_tesseract(image_path: Path, language: str) -> tuple[str, float | None]:
     tesseract = shutil.which("tesseract")
     if not tesseract:
-        raise RuntimeError("OCR fallback unavailable: install Tesseract and the requested language data.")
+        raise RuntimeError("OCR fallback unavailable: no compatible Tesseract executable and language data were found.")
     result = subprocess.run(
         [tesseract, str(image_path), "stdout", "-l", language, "tsv"],
         check=False,
@@ -76,7 +76,7 @@ def _ocr_with_tesseract(image_path: Path, language: str) -> tuple[str, float | N
 def _pdf_images(path: Path, max_items: int, destination: Path) -> list[tuple[str, Path]]:
     pdftoppm = shutil.which("pdftoppm")
     if not pdftoppm:
-        raise RuntimeError("OCR fallback unavailable: install Poppler pdftoppm to rasterize PDF pages.")
+        raise RuntimeError("PDF OCR unavailable: no compatible PDF rasterizer was found.")
     prefix = destination / "pdf-page"
     result = subprocess.run(
         [pdftoppm, "-f", "1", "-l", str(max_items), "-png", str(path), str(prefix)],
@@ -116,8 +116,8 @@ def _ocr_image(image_path: Path, language: str) -> tuple[str, float | None, str]
             return text, confidence, "tesseract"
         except Exception as tesseract_error:
             raise RuntimeError(
-                "OCR fallback unavailable: install the Skill requirements for RapidOCR, "
-                "or install Tesseract with the requested language data. "
+                "OCR fallback unavailable: neither RapidOCR nor a compatible Tesseract executable "
+                "with the requested language data is available. "
                 f"RapidOCR: {rapidocr_error}; Tesseract: {tesseract_error}"
             ) from tesseract_error
 

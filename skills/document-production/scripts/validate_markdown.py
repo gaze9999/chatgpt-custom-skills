@@ -94,8 +94,7 @@ def main() -> int:
     if VERSION_RE.search(text):
         result("PASS", "document-version", "vX document version detected")
     else:
-        warnings += 1
-        result("WARN", "document-version", "no '文件版本：vX' pattern detected")
+        result("INFO", "document-version", "no vX document version detected; acceptable unless the requested workflow requires one")
 
     print(f"SUMMARY: failures={failures} warnings={warnings}")
     return 1 if failures else 0

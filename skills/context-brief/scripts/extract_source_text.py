@@ -263,7 +263,7 @@ def extract_pdf(path: Path) -> str:
     text = extract_pdf_with_cli(path)
     if text is not None:
         return text
-    return "[PDF text extraction unavailable: install pypdf or pdfplumber, or provide pdftotext. Treat source coverage as unverified.]"
+    return "[PDF text extraction unavailable: no compatible PDF extractor was found. Treat source coverage as unverified.]"
 
 
 def extract(path: Path, max_rows_per_sheet: int) -> tuple[str, str]:

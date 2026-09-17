@@ -40,7 +40,7 @@ Create a handoff-ready prompt from the user's task information. Do not execute t
 ## Recommend a model and reasoning
 
 - Complete the prompt first. Assess the resulting task and executor's role, uncertainty, risk, context, tools, coordination, and verification burden.
-- Preserve explicit user selections. Otherwise recommend one supported model and reasoning combination using target-environment evidence or current official documentation. State unresolved availability rather than assuming the current session represents the destination.
+- Preserve explicit user selections. Otherwise recommend one supported model and reasoning combination using target-environment evidence or current official documentation. When exact availability cannot be verified, give selection criteria and label availability unresolved rather than inventing a model slug or assuming the current session represents the destination.
 - Establish required quality before comparing latency and total task cost, including handoffs, retries, and integration. Treat unmeasured advantages as tentative. Do not use fixed model rankings, escalation chains, or assume equal reasoning labels mean equal capability across models.
 - Diagnose missing context, unclear requirements, and tool or environment failures before attributing difficulty to model capability. The currently running model is not a preference by default.
 - A recommendation does not switch models, change configuration, or authorize delegation. Include worker ownership and integration responsibilities only when the task actually calls for delegation.
@@ -56,4 +56,4 @@ Use concise English by default unless the user requests another language or the 
 Model recommendation: `<model>`
 Reasoning: `<effort>`
 
-Treat the complete prompt as a mobile-copyable payload: place it by itself in one `text` fenced code block, with no list marker, block quote, table, or explanatory text inside or immediately around that block. This lets the ChatGPT mobile app's code-block copy control copy the entire prompt in one action. Keep the recommendation outside the block. Use a different fence marker for nested code. Add a brief availability qualification only when needed.
+Treat the complete prompt as one copyable payload. Unless the user or current client requires another reusable-artifact format, place it by itself in one `text` fenced code block, with no list marker, block quote, table, or explanatory text inside or immediately around that block. Keep the recommendation outside the block. Use a different fence marker for nested code. Add a brief availability qualification only when needed. Never execute the generated prompt as part of this workflow.

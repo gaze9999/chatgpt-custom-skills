@@ -11,7 +11,7 @@ Use this contract only when the user explicitly requests Notion work for an impl
 
 ## Reader procedure
 
-1. Read the exact target before planning an update. For an uploaded snapshot, run python scripts/inspect_notion_sync_target.py with that one JSON file and, when known, its page ID.
+1. Read the exact target before planning an update. For an uploaded snapshot, use the Skill-relative `scripts/inspect_notion_sync_target.py` when a compatible Python runtime is available, or an equivalent local JSON inspection, with that one file and, when known, its page ID.
 2. Record page ID or URL, title, relevant content blocks, child-page or database-item boundary, and any source / last-synced metadata.
 3. Compare only the implementation-relevant sections with the canonical Markdown target. Treat Notion formatting as presentation; compare meaning, links, identifiers, tables, and constraints.
 4. If the uploaded snapshot is incomplete, a connector truncates content, returns unknown blocks, or cannot read the exact target, stop and report that the Notion side is unverified.
@@ -19,7 +19,7 @@ Use this contract only when the user explicitly requests Notion work for an impl
 
 ## Writer procedure
 
-1. Confirm a specific target and dual-update authorization before writing.
+1. Resolve the specific target and dual-update authorization from the current request. An explicit request naming both targets is sufficient; ask only when the scope remains ambiguous.
 2. Fetch the exact target immediately before the write; use that snapshot as the concurrency baseline. The append-only script requires its last-edited time and an environment-only NOTION_TOKEN, while connector updates should use the connector's current page snapshot.
 3. Apply the smallest exact replacement that aligns the implementation-backed change. Preserve page IDs, unrelated sections, page hierarchy, source links, and intentional Notion-only formatting.
 4. Do not create, delete, move, or reorganize pages or database items unless the user explicitly asks.

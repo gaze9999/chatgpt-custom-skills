@@ -1,9 +1,9 @@
 interface:
   display_name: "Agent Governance"
-  short_description: "Simplify agent governance and reduce token overhead."
+  short_description: "Simplify agent governance and clarify role boundaries"
   icon_small: "./assets/icon-small.svg"
   icon_large: "./assets/icon.svg"
-  default_prompt: "Use $agent-governance to simplify agent rules and minimize total tokens at equal quality, preferring primary-agent execution when delegation offers no clear savings or required quality benefit."
+  default_prompt: "Use $agent-governance to simplify agent rules, place each rule at the right scope, preserve project boundaries, and keep work in the primary agent when delegation offers no clear benefit."
 
 policy:
   allow_implicit_invocation: true

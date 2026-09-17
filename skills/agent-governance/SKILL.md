@@ -12,7 +12,7 @@ Keep the smallest instruction set that preserves task boundaries, contracts, and
 ## Scope and evidence
 
 - Keep audits and recommendations read-only; edit only when requested. Default edit scope is AGENTS.md, role configuration, and directly related governance documents. Do not expand into application code, dependencies, deployment, or external actions.
-- Read the target guidance and relevant diffs before editing; preserve existing work. Start with narrow evidence and expand only to resolve a material gap. Use `scripts/scan_repo_structure.py` when a structural inventory is useful, not as a mandatory step.
+- Read the target guidance and relevant diffs before editing; preserve existing work. Start with narrow evidence and expand only to resolve a material gap. When available, resolve `scripts/scan_repo_structure.py` relative to this Skill and use it only when a structural inventory is useful; an unavailable helper does not block equivalent read-only discovery.
 - Check current official OpenAI documentation for discovery, configuration, or model behavior being changed. Reuse applicable evidence already in context; distinguish documented behavior, project observations, and tentative recommendations.
 - Write concise English unless the user or project requires another language. Preserve substantive constraints when shortening; do not invent roles, capabilities, paths, or results.
 
@@ -25,7 +25,8 @@ Keep the smallest instruction set that preserves task boundaries, contracts, and
 
 ## Place and simplify rules
 
-- Global guidance holds durable cross-project preferences; repository guidance holds project-specific contracts and ownership; role files hold role differences; task prompts hold temporary scope and acceptance criteria.
+- Global or user-level guidance holds only explicitly durable cross-project preferences; a one-off choice remains task context. Repository guidance holds project-specific contracts and ownership; role files hold role differences; task prompts hold current authorization, progress, exceptions, concurrency, and stop points.
+- Treat paths, installed tools, versions, model availability, and runtime capabilities as environment facts to resolve when the task runs. Do not encode one computer's directory layout or tool set as a portable requirement; use relative workspace or Skill resources where practical.
 - Keep a rule when it changes a meaningful decision, belongs at that layer, and is not reliably recoverable from source or tools. Merge repetition without weakening explicit requirements; retain exact wording when contractually significant.
 - Replace blanket rereads with relevant loading triggers. Linked references are not automatically loaded in full. Keep briefs for orientation and authoritative sources for contract questions.
 - Prefer existing formatters, tests, linters, or CI for mechanically enforceable checks. Do not add tooling or dependencies merely to reorganize instructions.
@@ -37,7 +38,7 @@ Keep the smallest instruction set that preserves task boundaries, contracts, and
 - Parallelize independent work with clear ownership. Give workers the goal, necessary context, contracts, evidence pointers, constraints, acceptance criteria, and stop point. Use supported context-sharing options suited to the task. The primary agent owns integration and final acceptance; reuse verified findings and recheck material gaps or drift.
 - Keep stable model-selection criteria in guidance and concrete defaults in maintained configuration. Preserve explicit user choices. Do not impose model rankings, fixed escalation chains, or profiles based solely on role labels.
 - Assess model and reasoning together for the actual task, uncertainty, risk, tools, context, and verification burden. Meet quality requirements first, then compare latency and total cost, including retries and coordination. Treat unmeasured advantages as tentative.
-- Make the effective model and reasoning deliberate at delegation time. Use supported explicit overrides or a verified suitable default; omitted settings can inherit an expensive parent. A fresh context does not imply a different model. Keep portable skills model-agnostic and place provisional named choices in target-specific guidance.
+- Make the effective model and reasoning deliberate at delegation time. Use supported explicit overrides or a verified suitable default; omitted settings can inherit the parent and may be unsuitable for the slice. A fresh context does not imply a different model. Keep portable skills model-agnostic and place provisional named choices in target-specific guidance.
 - Route by the work: bounded extraction, confirmed-result documentation, and deterministic renames are candidates for lower-cost settings. Behavioral conclusions, public-contract renames, and new architecture decisions require separate assessment. Implementing an approved structural plan differs from designing it. Split independent mechanical execution from uncertain decisions when useful, and escalate only the unresolved slice.
 - Do not force delegation for small coupled documentation or edits. Before removing model pins, check the resulting inheritance behavior and provide a deliberate selection path; removing defaults is not cost optimization.
 - Verify supported combinations in the target environment or current official documentation. Diagnose missing context, unclear requirements, and environment failures before attributing difficulty to model capability. A recommendation does not switch models or authorize delegation or configuration changes.
