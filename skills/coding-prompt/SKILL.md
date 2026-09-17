@@ -40,8 +40,17 @@ Create a handoff-ready prompt from the user's task information. Do not execute t
 ## Recommend a model and reasoning
 
 - Complete the prompt first. Assess the resulting task and executor's role, uncertainty, risk, context, tools, coordination, and verification burden.
-- Preserve explicit user selections. Otherwise recommend one supported model and reasoning combination using target-environment evidence or current official documentation. When exact availability cannot be verified, give selection criteria and label availability unresolved rather than inventing a model slug or assuming the current session represents the destination.
-- Establish required quality before comparing latency and total task cost, including handoffs, retries, and integration. Treat unmeasured advantages as tentative. Do not use fixed model rankings, escalation chains, or assume equal reasoning labels mean equal capability across models.
+- Preserve explicit user selections. Otherwise recommend exactly one model and reasoning combination that the target environment supports. When availability cannot be verified, give selection criteria and label availability unresolved rather than inventing a model slug or treating the current session as the destination.
+- Use the current official OpenAI workload positioning for supported models:
+  - `gpt-6-astra`: the hardest end-to-end work requiring the highest capability across complex reasoning, coding, computer use, research, or document creation.
+  - `gpt-5.6-sol`: complex professional work that needs flagship GPT-5.6 capability but does not justify Astra.
+  - `gpt-5.6-terra`: the default balance of intelligence and cost for bounded everyday coding, implementation, diagnosis, and review.
+  - `gpt-5.6-luna`: clear, focused, cost-sensitive, high-volume work where requirements and expected output are already well constrained.
+  - `gpt-5.5`: complex coding or professional work when the user explicitly selects it, the target workflow standardizes on it, or compatibility requires it; do not prefer it over current models without target-specific evidence.
+- Treat these descriptions as routing criteria, not a permanent ranking. For requests about the current, latest, cheapest, fastest, or most capable option, verify the current [OpenAI model catalog](https://developers.openai.com/api/docs/models) and the exact model page before recommending it.
+- Establish the required quality before comparing latency and total task cost, including handoffs, retries, and integration. Prefer Luna only after confirming the task is sufficiently narrow, Terra for the general balanced case, Sol when professional complexity or ambiguity raises the quality requirement, and Astra only when the hardest end-to-end workload benefits from its additional capability. Treat unmeasured advantages as tentative.
+- Match reasoning effort to the work rather than to the model name: use `low` for simple mechanical changes, `medium` for ordinary bounded work, `high` for interacting logic, ambiguous debugging, contract-sensitive review, or substantial verification, and `xhigh` or `max` only when the task's complexity and risk justify the added work. Recommend only an effort the selected model supports; Astra does not support `none`, and GPT-5.5 does not support `max`.
+- Do not assume equal reasoning labels mean equal capability across models, and do not compensate for a mismatched model solely by increasing reasoning effort.
 - Diagnose missing context, unclear requirements, and tool or environment failures before attributing difficulty to model capability. The currently running model is not a preference by default.
 - A recommendation does not switch models, change configuration, or authorize delegation. Include worker ownership and integration responsibilities only when the task actually calls for delegation.
 
