@@ -102,6 +102,8 @@ Do not create a new documentation surface unless the user asks for a new doc/mem
 
 Update local documentation by default. Access Notion only when the user explicitly requests it. General sync wording, an existing page target, links, or bidirectional metadata do not authorize Notion access or resume paused synchronization.
 
+- Do not copy local filesystem paths or relative Markdown links into Notion. Replace them with a Notion page mention or link only when that exact Notion target has been confirmed; otherwise retain the label as plain text and omit the local path.
+
 Complete authorized local updates without waiting for Notion. Preserve relationship metadata, but do not change Notion sync timestamps or claim remote alignment. If a counterpart exists, report it as intentionally not synchronized.
 
 When the user explicitly requests Notion synchronization, that request authorizes the identified targets; do not request duplicate confirmation:
@@ -120,6 +122,7 @@ When a target set separates current status from history or archives, preserve th
 - Put completed or superseded work, dated execution details, detailed check results, version hashes, sync events, and obsolete links in the history target.
 - Before removing content from the current document, confirm that unique evidence is already present in history or move it there. Avoid duplicating the same full record in both places.
 - If the user specifies an identifier format, apply it consistently to current records and record an old-to-new mapping in history. Preserve historical identifiers and anchors as evidence unless the user explicitly requests rewriting them.
+- Keep each new history entry to one or two concise paragraphs when possible. Combine the outcome, material evidence, and remaining verification limits; link to detailed evidence instead of copying command sequences or check-by-check narration. Use a longer entry only when necessary to retain unique information or when the user explicitly requests detail.
 
 ## Safe update style
 
