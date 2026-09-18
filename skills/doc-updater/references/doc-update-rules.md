@@ -112,6 +112,15 @@ When the user explicitly requests Notion synchronization, that request authorize
 4. Make the smallest authorized update and preserve unrelated content, page IDs, links, and metadata.
 5. Verify each updated target and distinguish local completion from remote synchronization.
 
+## Current-state and historical records
+
+When a target set separates current status from history or archives, preserve that division:
+
+- Keep the current document focused on current behavior, active work, unresolved decisions, and the latest verification boundary.
+- Put completed or superseded work, dated execution details, detailed check results, version hashes, sync events, and obsolete links in the history target.
+- Before removing content from the current document, confirm that unique evidence is already present in history or move it there. Avoid duplicating the same full record in both places.
+- If the user specifies an identifier format, apply it consistently to current records and record an old-to-new mapping in history. Preserve historical identifiers and anchors as evidence unless the user explicitly requests rewriting them.
+
 ## Safe update style
 
 - Use concise language.

@@ -24,6 +24,8 @@ When evidence or a target is missing, request only the information needed for co
 - Treat diffs and changed files as the highest-confidence evidence. When only a user summary exists, mark resulting claims `summary-based`.
 - Update only documents affected by public APIs, user-visible behavior, installation or configuration, deployment, migrations, compatibility, or established architecture descriptions. Internal refactors without behavior change normally do not require updates.
 - Read only the necessary diff and target sections, then make the smallest supported change. Do not promote internal details to public guarantees or add secrets or unnecessary personal data.
+- When a current-state document has a paired history or archive, keep the current document limited to current behavior, active work, unresolved decisions, and the latest verification boundary. Move superseded status, completed batches, dated execution details, old sync records, and obsolete navigation to history after confirming unique evidence is retained.
+- When identifiers are reformatted, apply the requested scheme to current records, record the old-to-new mapping in history, and preserve historical identifiers and anchors unless the user explicitly requests a historical rewrite.
 - When a compatible Python runtime is available, resolve bundled scripts relative to this Skill: use `scripts/scan_changed_files.py --repo <repo-root>` when impact discovery is needed, and for multiple targets use [Doc Update Rules](references/doc-update-rules.md) with `scripts/validate_doc_update_plan.py`. Otherwise use equivalent repository and document inspection; do not require installing the optional toolchain.
 
 ## Local-first updates
