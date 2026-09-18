@@ -1,0 +1,7 @@
+interface:
+  display_name: "Component Member Order"
+  short_description: "Safely organize Angular component class members"
+  default_prompt: "Use $component-member-order to organize Angular component class members by responsibility and feature flow without changing behavior."
+
+policy:
+  allow_implicit_invocation: true

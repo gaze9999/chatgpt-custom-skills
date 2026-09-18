@@ -9,6 +9,7 @@
 | Skill | 路徑 | 用途 | 主要輸出 |
 |---|---|---|---|
 | [Agent Governance](./skills/agent-governance/SKILL.md) | `skills/agent-governance` | 盤點並重整 `AGENTS.md`、subagent 職責與指示分層，移除不必要的重複規則 | Agent / subagent 治理規範修改 |
+| [Component Member Order](./skills/component-member-order/SKILL.md) | `skills/component-member-order` | 依成員責任與功能流程安全整理 Angular Component class，保留 Decorator、既有註解、初始化順序與 public interface | Component 成員排序，或限定檔案範圍的執行 Prompt |
 | [Coding Prompt](./skills/coding-prompt/SKILL.md) | `skills/coding-prompt` | 將最小必要的需求、scope、contract、驗收條件與停點整理成可複製的 coding agent prompt，並推薦模型與 reasoning | 可複製的 coding task prompt、模型與 reasoning 建議 |
 | [Context Brief](./skills/context-brief/SKILL.md) | `skills/context-brief` | 將規格書、API 文件、schema、需求文件或整合指南整理成可重複給 Codex 使用的 Markdown context brief | Codex context summary Markdown |
 | [Document Production](./skills/document-production/SKILL.md) | `skills/document-production` | 將使用者內容、來源與版面需求整理成可直接交付的正式文件；未指定格式時預設 PDF | PDF；或依需求輸出 DOCX / Markdown 等支援格式 |
@@ -42,6 +43,7 @@
 
    ```text
    agent-governance.zip
+   component-member-order.zip
    coding-prompt.zip
    context-brief.zip
    document-production.zip
@@ -132,6 +134,16 @@ Release assets 建議保持與 Skill 目錄相同的 basename，方便辨識與�
 ```
 
 輸出包含一個獨立的 `text` 程式碼區塊，手機 App 可用程式碼區塊的複製控制項一次複製完整 prompt；模型與 reasoning 建議會放在區塊後方。不重複一般 coding style、repo 已存在的規則或可直接查得的版本資訊。
+
+### Component Member Order
+
+適合處理：
+
+```text
+使用 $component-member-order 整理這個 Angular 功能目錄內的 Component class 成員順序，同類成員不留空行，依畫面區塊與功能流程排列方法，保留既有 JSDoc 與執行行為。
+```
+
+此 Skill 會先依成員責任建立大類，再依實際畫面區塊或功能流程排列方法，不採字母排序。Class field initializer 存在相依時會優先保留安全的執行順序，並回報無法套用標準順序的例外。使用者明確要求時，也可將 eligible `@Input`／`@Output` 遷移為 Angular Signal API，並同步檢查 Template、setter Input、two-way binding 與測試。若只需要交接 Prompt，可使用 Skill 內的 Python script 掃描指定目錄並產生限定檔案清單，加入 `--signal-io` 可產生 Signal I/O 遷移要求。
 
 ### Context Brief
 
