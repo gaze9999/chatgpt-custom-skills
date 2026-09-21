@@ -19,6 +19,14 @@ Use only when all conditions hold:
 
 Use the appropriate workflow instead for generic document conversion, ordinary summaries, Notion organization, formal PDF/DOCX output, a single coding prompt, or post-implementation documentation updates.
 
+## When to create or refresh one
+
+- Do not create a Context Brief after a fixed number of messages or conversation compactions. Compaction supports continuing long-running work and is not itself evidence that a new artifact or conversation is needed.
+- Create one when identified implementation-contract material will be reused across separate tasks or conversations, when repeatedly rereading a large governing source is costly, or when a future implementation needs a compact self-contained contract reference.
+- Refresh one only when its governing contract, accepted decision, source coverage, or intended implementation scope materially changes.
+- Use a task handoff for current progress, changed files, check results, blockers, and the next step. Do not turn chat history, tool logs, or a compaction recap into a Context Brief.
+- Keep the same conversation for the same outcome while retained state remains reliable. A distinct deliverable, repository, branch, or independent workstream is a better reason to start a new conversation than compaction count.
+
 ## Workflow
 
 - Resolve source boundaries, intended use, and deliverable from the request and available material. Ask only when a gap affects correctness or coverage.

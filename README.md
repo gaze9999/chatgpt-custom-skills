@@ -10,8 +10,8 @@
 |---|---|---|---|
 | [Agent Governance](./skills/agent-governance/SKILL.md) | `skills/agent-governance` | 盤點並重整 `AGENTS.md`、subagent 職責與指示分層，移除不必要的重複規則 | Agent / subagent 治理規範修改 |
 | [Component Member Order](./skills/component-member-order/SKILL.md) | `skills/component-member-order` | 依成員責任與功能流程安全整理 Angular Component class，保留 Decorator、既有註解、初始化順序與 public interface | Component 成員排序，或限定檔案範圍的執行 Prompt |
-| [Coding Prompt](./skills/coding-prompt/SKILL.md) | `skills/coding-prompt` | 將最小必要的需求、scope、contract、驗收條件與停點整理成可複製的 coding agent prompt，並推薦模型與 reasoning | 可複製的 coding task prompt、模型與 reasoning 建議 |
-| [Context Brief](./skills/context-brief/SKILL.md) | `skills/context-brief` | 將規格書、API 文件、schema、需求文件或整合指南整理成可重複給 Codex 使用的 Markdown context brief | Codex context summary Markdown |
+| [Coding Prompt](./skills/coding-prompt/SKILL.md) | `skills/coding-prompt` | 僅在明確要求 prompt 或 handoff 時，將最小必要需求整理成可複製的 coding agent prompt，並推薦模型與 reasoning | 可複製的 coding task prompt、模型與 reasoning 建議 |
+| [Context Brief](./skills/context-brief/SKILL.md) | `skills/context-brief` | 將會跨任務重用的規格書、API 文件、schema、需求文件或整合指南整理成 Markdown context brief，不作為聊天或進度摘要 | Codex implementation-contract brief |
 | [Document Production](./skills/document-production/SKILL.md) | `skills/document-production` | 將使用者內容、來源與版面需求整理成可直接交付的正式文件；未指定格式時預設 PDF | PDF；或依需求輸出 DOCX / Markdown 等支援格式 |
 | [Editorial Illustration](./skills/editorial-illustration/SKILL.md) | `skills/editorial-illustration` | 將使用者提供的圖片、可選視覺調整與內建 base prompt 合併後，直接執行 editorial illustration 圖片生成 | 每張來源圖對應一張獨立插畫 |
 | [Doc Updater](./skills/doc-updater/SKILL.md) | `skills/doc-updater` | 程式改版、PR、diff、release 或 refactor 後，更新 docs、Markdown memo、Notion memo、changelog、API reference 或 Codex context brief | 與實作變更對齊的文件／memo 更新 |
@@ -125,6 +125,8 @@ Release assets 建議保持與 Skill 目錄相同的 basename，方便辨識與�
 
 此 Skill 聚焦在 agent governance，不應順便修改 production code。
 
+目前治理方向以精簡、直接執行與成果導向為主：移除舊模型時代累積的固定流程與重複提示；主 agent 在已授權時直接完成工作；subagent 只用於可獨立切分且確實能改善品質、時間或上下文隔離的工作，不視為省 token 手段。
+
 ### Coding Prompt
 
 適合處理：
@@ -134,6 +136,8 @@ Release assets 建議保持與 Skill 目錄相同的 basename，方便辨識與�
 ```
 
 輸出包含一個獨立的 `text` 程式碼區塊，手機 App 可用程式碼區塊的複製控制項一次複製完整 prompt；模型與 reasoning 建議會放在區塊後方。不重複一般 coding style、repo 已存在的規則或可直接查得的版本資訊。
+
+只有使用者明確要求 coding prompt、delegation prompt 或 handoff 時才使用此 Skill。若使用者要求調查、修改、修正或實作，agent 應直接完成工作，不以產生 prompt 取代執行。
 
 ### Component Member Order
 
@@ -154,6 +158,8 @@ Release assets 建議保持與 Skill 目錄相同的 basename，方便辨識與�
 ```
 
 此 Skill 聚焦在長文件壓縮成可重用 Codex 背景，不負責直接實作，也不取代單次任務 prompt。輸出應保留實作契約、限制、例外情境與來源追蹤，避免之後每次都重新貼完整規格書。
+
+Context Brief 不依聊天訊息數或 compaction 次數自動產生。當同一份規格、API、schema 或驗收條件需要跨任務重用，或反覆讀取大型權威來源已產生成本時才建立；聊天進度、修改檔案、驗證結果與下一步使用 task handoff 保存。
 
 ### Document Production
 

@@ -1,13 +1,19 @@
 ---
 name: coding-prompt
-description: Turn a coding request into a concise, copyable agent prompt with a model and reasoning recommendation.
+description: Create a concise coding-agent prompt and model recommendation only when the user explicitly asks for a prompt or handoff; do not use for direct implementation requests.
 metadata:
   short-description: Concise coding-task prompt generator
 ---
 
 # Coding Prompt
 
-Create a handoff-ready prompt from the user's task information. Do not execute the task. User instructions override these defaults.
+Create a handoff-ready prompt from the user's task information only when the requested deliverable is the prompt itself. Do not execute the task. User instructions override these defaults.
+
+## Activation
+
+- Use when the user explicitly asks for a coding-agent prompt, delegation prompt, portable handoff prompt, or model and reasoning recommendation packaged with that prompt.
+- Do not activate for ordinary requests to investigate, review, diagnose, change, fix, build, or implement. Complete those requests directly with the applicable project and Skill guidance.
+- Do not substitute a prompt-only deliverable when the user expects executable work, even if another agent could perform it later.
 
 ## Compose the task
 
