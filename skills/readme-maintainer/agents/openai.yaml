@@ -1,0 +1,7 @@
+interface:
+  display_name: "README Maintainer"
+  short_description: "Create accurate repository README documentation"
+  default_prompt: "Use $readme-maintainer to inspect the repository's actual source, configuration, scripts, tests, deployment, and existing docs, then create or substantially improve an accurate and scannable README."
+
+policy:
+  allow_implicit_invocation: true

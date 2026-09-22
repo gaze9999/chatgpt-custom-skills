@@ -22,7 +22,6 @@ import argparse
 import csv
 import html
 import json
-import os
 import re
 import shutil
 import subprocess
@@ -39,6 +38,9 @@ SPREADSHEET_EXTENSIONS = {".xlsx"}
 DOCX_EXTENSIONS = {".docx"}
 PDF_EXTENSIONS = {".pdf"}
 CSV_EXTENSIONS = {".csv", ".tsv"}
+OCR_EXTENSIONS = PDF_EXTENSIONS | DOCX_EXTENSIONS | SPREADSHEET_EXTENSIONS | {".pptx"} | {
+    ".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"
+}
 
 XML_NS = {
     "w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
@@ -151,10 +153,6 @@ def read_xlsx_shared_strings(zf: zipfile.ZipFile) -> list[str]:
     return strings
 
 
-def column_name(cell_ref: str) -> str:
-    return re.sub(r"\d+", "", cell_ref)
-
-
 def extract_xlsx(path: Path, max_rows_per_sheet: int) -> str:
     lines: list[str] = []
     with zipfile.ZipFile(path) as zf:
@@ -187,7 +185,7 @@ def extract_xlsx(path: Path, max_rows_per_sheet: int) -> str:
                         value = value_node.text
                     value = normalize_ws(html.unescape(value))
                     if value:
-                        label = ref or column_name(ref)
+                        label = ref or "cell"
                         cells.append(f"{label}={value}")
                 if cells:
                     lines.append("; ".join(cells))
@@ -295,8 +293,16 @@ def render_ocr_records(records: list[dict[str, object]]) -> str:
     return "\n".join(lines)
 
 
+def native_extraction_insufficient(path: Path, body: str) -> bool:
+    if path.suffix.lower() not in OCR_EXTENSIONS:
+        return False
+    useful = re.sub(r"\[[^\]]+\]|\W+", "", body, flags=re.UNICODE)
+    return body.lstrip().startswith("[") or len(useful) < 80
+
+
 def build_output(path: Path, source_type: str, body: str, truncated: bool, ocr_status: str) -> str:
-    status = "partial" if truncated or body.startswith("[") or ocr_status not in {"not_requested", "not_applicable"} else "extracted"
+    neutral_ocr = {"not_requested", "not_applicable", "skipped_native_text_sufficient"}
+    status = "partial" if truncated or body.startswith("[") or ocr_status not in neutral_ocr else "extracted"
     header = [
         f"# Extracted Source Text: {path.name}",
         "",
@@ -320,6 +326,7 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument("--max-chars", type=int, default=80000, help="Maximum extracted characters to print/write. Use 0 for no limit.")
     parser.add_argument("--max-rows-per-sheet", type=int, default=200, help="Maximum rows per XLSX worksheet.")
     parser.add_argument("--ocr-fallback", action="store_true", help="Optionally OCR bounded PDF pages or embedded OOXML images when native extraction is insufficient.")
+    parser.add_argument("--force-ocr", action="store_true", help="OCR eligible visual content even when native text looks sufficient.")
     parser.add_argument("--ocr-max-items", type=int, default=20, help="Maximum PDF pages or embedded images to OCR (1-100). Default: 20.")
     parser.add_argument("--ocr-lang", default="eng", help="Installed Tesseract language code. Default: eng.")
     args = parser.parse_args(list(argv) if argv is not None else None)
@@ -332,10 +339,12 @@ def main(argv: Iterable[str] | None = None) -> int:
     try:
         source_type, extracted = extract(path, args.max_rows_per_sheet)
         ocr_status = "not_requested"
-        if args.ocr_fallback:
+        if args.ocr_fallback and (args.force_ocr or native_extraction_insufficient(path, extracted)):
             records, ocr_status = ocr_fallback(path, args.ocr_max_items, args.ocr_lang)
             if records:
                 extracted += render_ocr_records(records)
+        elif args.ocr_fallback:
+            ocr_status = "skipped_native_text_sufficient" if path.suffix.lower() in OCR_EXTENSIONS else "not_applicable"
         extracted = normalize_ws(extracted)
         extracted, truncated = truncate(extracted, args.max_chars)
         output = build_output(path, source_type, extracted, truncated, ocr_status)

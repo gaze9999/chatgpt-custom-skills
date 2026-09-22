@@ -32,7 +32,7 @@ Use the appropriate workflow instead for generic document conversion, ordinary s
 - Resolve source boundaries, intended use, and deliverable from the request and available material. Ask only when a gap affects correctness or coverage.
 - Preserve names, paths, fields, enums, status codes, validation, security and permissions, errors, constraints, examples, and acceptance criteria.
 - Compress marketing copy, repeated background, and implementation-irrelevant narrative. Do not turn gaps, conflicts, OCR text, historical progress, or current implementation behavior into confirmed contracts. Treat them as evidence unless a governing source or explicit user decision establishes the contract.
-- Exclude secrets, credentials, private tokens, and unnecessary personal data unless the user explicitly requests retention. Preserve only the minimum source detail required for implementation.
+- Retaining secrets, credentials, private tokens, or unnecessary personal data requires an explicit user request and implementation need. Preserve only the minimum source detail required for implementation.
 - Preserve source boundaries across multiple inputs. For large material, extract only task-relevant sections.
 
 ## On-demand tools

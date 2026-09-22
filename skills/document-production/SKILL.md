@@ -28,6 +28,6 @@ For scientific, medical, health, pharmaceutical, or psychological content, use A
 
 ## On-demand verification
 
-When a compatible Python runtime is available, resolve and run the matching validator relative to this Skill: `scripts/validate_pdf.py`, `scripts/validate_docx.py`, `scripts/validate_markdown.py`, or `scripts/validate_apa7.py`. Otherwise use equivalent available inspection and report the bundled validator as not run. Do not install optional tooling solely to satisfy this workflow unless the user authorizes it. When rendering or another check cannot be completed, mark it unverified with the reason rather than claiming success.
+When a compatible Python runtime is available, resolve and run the matching validator relative to this Skill: `scripts/validate_pdf.py`, `scripts/validate_docx.py`, `scripts/validate_markdown.py`, or `scripts/validate_apa7.py`. Otherwise use equivalent available inspection and report the bundled validator as not run. Install optional tooling only with user authorization. When rendering or another check cannot be completed, mark it unverified with the reason rather than claiming success.
 
 In the final response, list only deliverable links, formats, completed checks, and unverified items.

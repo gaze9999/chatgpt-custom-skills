@@ -19,7 +19,7 @@ Create a handoff-ready prompt from the user's task information only when the req
 
 - Use the supplied goal, scope, evidence, contracts, constraints, acceptance criteria, and destination. Request missing information only when it materially affects the handoff.
 - Preserve the requested deliverable and authority boundary. Reviews, diagnoses, and plans remain read-only unless implementation is requested. Do not add external actions or expand scope.
-- Use supplied or already-loaded evidence. Inspect additional sources only when the user asks to incorporate them; do not scan a repository merely to shorten a prompt.
+- Use supplied or already-loaded evidence. Inspect additional sources when the user asks to incorporate them; do not scan a repository merely to shorten a prompt.
 - State the intended behavior change, contracts to preserve, and observable acceptance criteria. Do not invent APIs, paths, versions, commands, mappings, or results.
 - Keep uncertainty explicit. Block only work that depends on missing authorization, contracts, or required decisions; preserve independent work.
 - Consolidate repeated requirements without weakening them. Retain prerequisites, exact messages, boundary values, regression cases, required checks, and stop points. Preserve wording verbatim only when requested or contractually significant.
@@ -46,23 +46,18 @@ Create a handoff-ready prompt from the user's task information only when the req
 ## Recommend a model and reasoning
 
 - Complete the prompt first. Assess the resulting task and executor's role, uncertainty, risk, context, tools, coordination, and verification burden.
-- Preserve explicit user selections. Otherwise recommend exactly one model and reasoning combination that the target environment supports. When availability cannot be verified, give selection criteria and label availability unresolved rather than inventing a model slug or treating the current session as the destination.
-- Use the current official OpenAI workload positioning for supported models:
-  - `gpt-6-astra`: the hardest end-to-end work requiring the highest capability across complex reasoning, coding, computer use, research, or document creation.
-  - `gpt-5.6-sol`: complex professional work that needs flagship GPT-5.6 capability but does not justify Astra.
-  - `gpt-5.6-terra`: the default balance of intelligence and cost for bounded everyday coding, implementation, diagnosis, and review.
-  - `gpt-5.6-luna`: clear, focused, cost-sensitive, high-volume work where requirements and expected output are already well constrained.
-  - `gpt-5.5`: complex coding or professional work when the user explicitly selects it, the target workflow standardizes on it, or compatibility requires it; do not prefer it over current models without target-specific evidence.
-- Treat these descriptions as routing criteria, not a permanent ranking. For requests about the current, latest, cheapest, fastest, or most capable option, verify the current [OpenAI model catalog](https://developers.openai.com/api/docs/models) and the exact model page before recommending it.
-- Establish the required quality before comparing latency and total task cost, including handoffs, retries, and integration. Prefer Luna only after confirming that requirements, expected edits, affected surface, and verification are sufficiently clear and bounded; suitable examples include deterministic single-file or small cross-file type, import, rename, formatting, and other repeatable changes. Prefer Terra when ordinary implementation still needs cross-file compatibility judgment, diagnosis, or non-trivial edge-case reasoning; use Sol when professional complexity or ambiguity raises the quality requirement, and Astra only when the hardest end-to-end workload benefits from its additional capability. File count alone is not a model-selection rule. Treat unmeasured advantages as tentative.
-- Match reasoning effort to the work rather than to the model name: use `low` for simple mechanical changes, `medium` for ordinary bounded work, `high` for interacting logic, ambiguous debugging, contract-sensitive review, or substantial verification, and `xhigh` or `max` only when the task's complexity and risk justify the added work. Recommend only an effort the selected model supports; Astra does not support `none`, and GPT-5.5 does not support `max`.
+- Preserve explicit user selections. Otherwise verify the models and reasoning levels supported by the target environment and consult current official model documentation before naming a model. Do not copy a remembered catalog into the prompt or treat the current session as the destination.
+- Recommend exactly one supported model and reasoning combination. If availability cannot be verified, give durable selection criteria and label the concrete choice unresolved rather than inventing a slug.
+- Establish the required quality before comparing latency and total task cost, including handoffs, retries, and integration. Clear mechanical work with bounded verification can use a faster lower-cost option; cross-file compatibility, diagnosis, ambiguous behavior, public contracts, architecture, or substantial verification require stronger reasoning. File count alone is not a routing rule.
+- Match reasoning effort to uncertainty, interacting logic, risk, and verification burden rather than to the model name. Recommend only a level supported by the selected model; reserve the highest levels for work whose complexity materially benefits from them.
+- Treat official workload positioning as the primary model basis and human reports as anecdotal secondary evidence. Do not turn a single benchmark, provider comparison, or cost claim into a permanent ranking.
 - Do not assume equal reasoning labels mean equal capability across models, and do not compensate for a mismatched model solely by increasing reasoning effort.
 - Diagnose missing context, unclear requirements, and tool or environment failures before attributing difficulty to model capability. The currently running model is not a preference by default.
 - A recommendation does not switch models or change configuration. Preserve any applicable user or project rule that lets the primary agent decide whether to delegate from workload and independence; include worker ownership and integration responsibilities only when the task actually contains useful independent slices.
 
 ## Output
 
-Use concise English by default unless the user requests another language or the target project requires it. Follow the user's requested format; otherwise return:
+Use the language requested by the user or target project; otherwise use concise English. Follow the user's requested format; otherwise return:
 
 ```text
 [complete handoff-ready prompt]
@@ -71,4 +66,4 @@ Use concise English by default unless the user requests another language or the 
 Model recommendation: `<model>`
 Reasoning: `<effort>`
 
-Treat the complete prompt as one copyable payload. Unless the user or current client requires another reusable-artifact format, place it by itself in one `text` fenced code block, with no list marker, block quote, table, or explanatory text inside or immediately around that block. Keep the recommendation outside the block. Use a different fence marker for nested code. Add a brief availability qualification only when needed. Never execute the generated prompt as part of this workflow.
+Treat the complete prompt as one copyable payload. Use another reusable-artifact format when the user or current client requires it; otherwise place the prompt by itself in one `text` fenced code block, with no list marker, block quote, table, or explanatory text inside or immediately around that block. Keep the recommendation outside the block. Use a different fence marker for nested code. Add a brief availability qualification only when needed. Never execute the generated prompt as part of this workflow.

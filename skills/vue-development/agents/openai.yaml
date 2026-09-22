@@ -1,0 +1,7 @@
+interface:
+  display_name: "Vue Development"
+  short_description: "Implement Vue and Nuxt features with project fidelity"
+  default_prompt: "Use $vue-development to inspect the detected Vue, Nuxt, or Vite stack and its component, state, routing, SSR, styling, and build contracts, then implement and verify the requested change."
+
+policy:
+  allow_implicit_invocation: true

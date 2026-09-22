@@ -1,0 +1,7 @@
+interface:
+  display_name: "Unity Development"
+  short_description: "Implement and verify Unity project changes safely"
+  default_prompt: "Use $unity-development to inspect this project's Unity version, packages, serialized assets, pipelines, and build targets, then implement and verify the requested Unity change without breaking asset or GUID contracts."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Validate a Codex context brief Markdown file.
-
-This script performs lightweight structural checks only. It does not verify that
-source material actually supports the brief's claims.
-"""
+"""Run language-neutral structural checks on a context brief."""
 
 from __future__ import annotations
 
@@ -11,50 +7,21 @@ import argparse
 import json
 import re
 import sys
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
-
-REQUIRED_HEADINGS = {
-    "metadata",
-    "scope",
-    "implementation-relevant summary",
-    "implementation guidance for codex",
-    "open questions / unresolved items",
-    "source traceability",
-}
-
-IMPLEMENTATION_SIGNAL_PATTERNS = [
-    r"\bapi\b",
-    r"\bendpoint\b",
-    r"\bmethod\b",
-    r"\bpath\b",
-    r"\bauth\b",
-    r"\brequest\b",
-    r"\bresponse\b",
-    r"\berror\b",
-    r"\bschema\b",
-    r"\bfield\b",
-    r"\benum\b",
-    r"\bstatus code\b",
-    r"\bvalidation\b",
-    r"\bconstraint\b",
-    r"\bidempotenc",
-    r"\bpagination\b",
-    r"\brate limit\b",
-    r"\bpermission\b",
-    r"\bsecurity\b",
-    r"\bworkflow\b",
-    r"\bacceptance criteria\b",
-]
-
-UNRESOLVED_MARKERS = (
-    "Open question",
-    "Assumption",
-    "Conflict",
-    "Unconfirmed",
-    "TBD",
-    "TODO",
+FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")
+HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$")
+TRACE_RE = re.compile(
+    r"https?://\S+|(?:[A-Za-z]:[\\/]|\.?\.?/)[^\s]+|"
+    r"^\s*(?:[-*]\s*)?(?:source|來源|出處|page|頁次|section|章節|row|列)\s*[:：]",
+    re.IGNORECASE | re.MULTILINE,
+)
+SECRET_PATTERNS = (
+    r"sk-[A-Za-z0-9_-]{20,}",
+    r"ghp_[A-Za-z0-9_]{20,}",
+    r"-----BEGIN (?:RSA |OPENSSH |EC |DSA )?PRIVATE KEY-----",
+    r"(?i)\b(?:api[_-]?key|access[_-]?token|secret)\s*[:=]\s*['\"]?[A-Za-z0-9_-]{16,}",
 )
 
 
@@ -65,173 +32,109 @@ class Check:
     message: str
 
 
-def emit(checks: list[Check], as_json: bool) -> None:
-    if as_json:
-        status = "fail" if any(c.status == "FAIL" for c in checks) else "pass"
-        if status == "pass" and any(c.status == "WARN" for c in checks):
-            status = "warn"
-        print(json.dumps({"status": status, "checks": [asdict(c) for c in checks]}, ensure_ascii=False, indent=2))
-        return
-
-    for check in checks:
-        print(f"{check.status} {check.name}: {check.message}")
-
-    if any(c.status == "FAIL" for c in checks):
-        print("SUMMARY: FAIL")
-    elif any(c.status == "WARN" for c in checks):
-        print("SUMMARY: WARN")
-    else:
-        print("SUMMARY: PASS")
-
-
-def normalized_headings(text: str) -> list[str]:
-    headings: list[str] = []
-    in_fence = False
-    for line in text.splitlines():
-        if line.strip().startswith("```"):
-            in_fence = not in_fence
-            continue
-        if in_fence:
-            continue
-        match = re.match(r"^(#{1,6})\s+(.+?)\s*$", line)
+def scan_markdown(text: str) -> tuple[list[tuple[int, int, str]], bool]:
+    headings: list[tuple[int, int, str]] = []
+    fence: tuple[str, int] | None = None
+    for lineno, line in enumerate(text.splitlines(), start=1):
+        match = FENCE_RE.match(line)
         if match:
-            heading = re.sub(r"\s+", " ", match.group(2).strip().lower())
-            headings.append(heading)
-    return headings
+            token = match.group(1)
+            if fence is None:
+                fence = (token[0], len(token))
+            elif token[0] == fence[0] and len(token) >= fence[1] and not line[match.end():].strip():
+                fence = None
+            continue
+        if fence is not None:
+            continue
+        match = HEADING_RE.match(line)
+        if match:
+            headings.append((lineno, len(match.group(1)), match.group(2).strip()))
+    return headings, fence is None
 
 
-def check_code_fences(text: str) -> Check:
-    fence_count = sum(1 for line in text.splitlines() if line.strip().startswith("```"))
-    if fence_count % 2 == 0:
-        return Check("PASS", "code_fences", "fenced code blocks are balanced")
-    return Check("FAIL", "code_fences", "fenced code blocks are not balanced")
-
-
-def check_title(headings: list[str]) -> Check:
+def check_structure(headings: list[tuple[int, int, str]]) -> list[Check]:
     if not headings:
-        return Check("FAIL", "title", "no Markdown headings found")
-    if "codex context brief" in headings[0]:
-        return Check("PASS", "title", "top heading identifies a Codex context brief")
-    return Check("WARN", "title", "top heading does not explicitly include 'Codex Context Brief'")
-
-
-def check_required_headings(headings: list[str]) -> list[Check]:
-    found = set(headings)
-    checks: list[Check] = []
-    for heading in sorted(REQUIRED_HEADINGS):
-        if heading in found:
-            checks.append(Check("PASS", f"heading:{heading}", "required heading found"))
-        else:
-            checks.append(Check("WARN", f"heading:{heading}", "recommended heading missing; acceptable only if not applicable"))
+        return [Check("FAIL", "headings", "no Markdown headings found")]
+    checks = [Check("PASS", "headings", f"found {len(headings)} headings")]
+    checks.append(
+        Check("PASS", "title", "first heading is H1")
+        if headings[0][1] == 1
+        else Check("WARN", "title", f"first heading is H{headings[0][1]}, not H1")
+    )
+    jumps = [
+        f"line {current[0]}: H{previous[1]} to H{current[1]}"
+        for previous, current in zip(headings, headings[1:])
+        if current[1] > previous[1] + 1
+    ]
+    checks.append(
+        Check("WARN", "heading_hierarchy", "; ".join(jumps[:5]))
+        if jumps
+        else Check("PASS", "heading_hierarchy", "no skipped heading levels")
+    )
     return checks
 
 
-def check_source_traceability(text: str) -> Check:
-    lower = text.lower()
-    has_source = any(marker in lower for marker in ("source:", "source version:", "source coverage:", "repository path", "page", "section", "url"))
-    if has_source:
-        return Check("PASS", "source_traceability", "source metadata or traceability markers found")
-    return Check("WARN", "source_traceability", "no clear source metadata or source traceability markers found")
-
-
-def check_source_coverage(text: str) -> Check:
-    if re.search(r"(?im)^\s*-?\s*source coverage\s*:", text):
-        return Check("PASS", "source_coverage", "source coverage marker found")
-    return Check("WARN", "source_coverage", "no Source coverage marker found; mark complete / partial / unverified")
-
-
-def check_codex_intended_use(text: str) -> Check:
-    lower = text.lower()
-    has_intended_use = re.search(r"(?im)^\s*-?\s*intended use\s*:", text) is not None
-    mentions_codex = "codex" in lower or "coding agent" in lower or "coding-agent" in lower
-    if has_intended_use and mentions_codex:
-        return Check("PASS", "codex_intended_use", "intended use and Codex / coding-agent marker found")
-    if mentions_codex:
-        return Check("WARN", "codex_intended_use", "Codex / coding-agent marker found, but Intended use metadata is missing")
-    return Check("WARN", "codex_intended_use", "no clear Codex / coding-agent intended-use marker found")
-
-
-def check_implementation_signals(text: str) -> Check:
-    lower = text.lower()
-    matches = sum(1 for pattern in IMPLEMENTATION_SIGNAL_PATTERNS if re.search(pattern, lower))
-    if matches >= 3:
-        return Check("PASS", "implementation_signals", f"found {matches} implementation-relevant signal categories")
-    return Check("WARN", "implementation_signals", f"only found {matches} implementation-relevant signal categories")
-
-
-def check_unresolved_items(text: str) -> Check:
-    if any(marker.lower() in text.lower() for marker in UNRESOLVED_MARKERS):
-        return Check("PASS", "unresolved_markers", "unresolved / assumption markers are explicit")
-    return Check("WARN", "unresolved_markers", "no explicit unresolved, assumption, conflict, or unconfirmed markers found")
-
-
-def check_summary_only_shape(text: str) -> Check:
-    lower = text.lower()
-    generic_markers = ("introduction", "conclusion", "background", "overview")
-    codex_markers = ("implementation guidance for codex", "contracts and invariants", "api / interface reference", "data model / schema")
-    generic_count = sum(1 for marker in generic_markers if marker in lower)
-    codex_count = sum(1 for marker in codex_markers if marker in lower)
-    if codex_count >= 1:
-        return Check("PASS", "brief_shape", "Codex-oriented structure markers found")
-    if generic_count >= 2:
-        return Check("WARN", "brief_shape", "document looks like a generic summary; ensure it is a Codex context brief")
-    return Check("WARN", "brief_shape", "few Codex-oriented structure markers found")
-
-
-def check_secrets(text: str) -> Check:
-    patterns = [
-        r"sk-[A-Za-z0-9_-]{20,}",
-        r"ghp_[A-Za-z0-9_]{20,}",
-        r"-----BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY-----",
-        r"(?i)\b(api[_-]?key|access[_-]?token|secret)\s*[:=]\s*['\"]?[A-Za-z0-9_\-]{16,}",
-    ]
-    for pattern in patterns:
-        if re.search(pattern, text):
-            return Check("FAIL", "secrets", "possible secret or credential pattern found")
-    return Check("PASS", "secrets", "no common secret patterns found")
-
-
-def validate(path: Path, strict: bool = False) -> list[Check]:
-    checks: list[Check] = []
-    if not path.exists():
+def validate(path: Path, required: list[str], strict: bool) -> list[Check]:
+    if not path.is_file():
         return [Check("FAIL", "file", f"file not found: {path}")]
+    checks: list[Check] = []
     if path.suffix.lower() not in {".md", ".markdown", ".txt"}:
-        checks.append(Check("WARN", "extension", "expected Markdown-like file extension"))
-
+        checks.append(Check("WARN", "extension", "expected a Markdown-like file"))
     text = path.read_text(encoding="utf-8")
     if not text.strip():
         return [Check("FAIL", "content", "file is empty")]
 
-    headings = normalized_headings(text)
-    checks.append(check_title(headings))
-    checks.extend(check_required_headings(headings))
-    checks.append(check_code_fences(text))
-    checks.append(check_codex_intended_use(text))
-    checks.append(check_source_traceability(text))
-    checks.append(check_source_coverage(text))
-    checks.append(check_implementation_signals(text))
-    checks.append(check_summary_only_shape(text))
-    checks.append(check_unresolved_items(text))
-    checks.append(check_secrets(text))
-
+    headings, fences_balanced = scan_markdown(text)
+    checks.extend(check_structure(headings))
+    checks.append(
+        Check("PASS", "code_fences", "fenced code blocks are balanced")
+        if fences_balanced
+        else Check("FAIL", "code_fences", "fenced code block is not closed")
+    )
+    folded = [title.casefold() for _, _, title in headings]
+    for expected in required:
+        found = any(expected.casefold() in title for title in folded)
+        checks.append(
+            Check("PASS", f"required_heading:{expected}", "heading found")
+            if found
+            else Check("FAIL", f"required_heading:{expected}", "heading not found")
+        )
+    checks.append(
+        Check("PASS", "source_traceability", "source location marker found")
+        if TRACE_RE.search(text)
+        else Check("WARN", "source_traceability", "no URL, path, page, section, row, or source marker found")
+    )
+    secret = next((pattern for pattern in SECRET_PATTERNS if re.search(pattern, text)), None)
+    checks.append(
+        Check("FAIL", "secrets", "possible secret or credential pattern found")
+        if secret
+        else Check("PASS", "secrets", "no common secret patterns found")
+    )
     if strict:
-        checks = [
-            Check("FAIL", c.name, c.message) if c.status == "WARN" else c
-            for c in checks
-        ]
+        checks = [Check("FAIL", item.name, item.message) if item.status == "WARN" else item for item in checks]
     return checks
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate a reusable Codex context brief Markdown file.")
-    parser.add_argument("path", help="Path to the Markdown context brief")
-    parser.add_argument("--json", action="store_true", help="Emit JSON output")
-    parser.add_argument("--strict", action="store_true", help="Treat warnings as failures")
-    args = parser.parse_args()
+def emit(checks: list[Check], as_json: bool) -> None:
+    state = "fail" if any(item.status == "FAIL" for item in checks) else "warn" if any(item.status == "WARN" for item in checks) else "pass"
+    if as_json:
+        print(json.dumps({"status": state, "checks": [asdict(item) for item in checks]}, ensure_ascii=False, indent=2))
+        return
+    for item in checks:
+        print(f"{item.status} {item.name}: {item.message}")
+    print(f"SUMMARY: {state.upper()}")
 
-    checks = validate(Path(args.path), strict=args.strict)
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Validate a reusable context brief without assuming its language.")
+    parser.add_argument("path", type=Path)
+    parser.add_argument("--required-heading", action="append", default=[], help="Require a heading containing this text; repeat as needed.")
+    parser.add_argument("--json", action="store_true")
+    parser.add_argument("--strict", action="store_true", help="Treat warnings as failures.")
+    args = parser.parse_args()
+    checks = validate(args.path, args.required_heading, args.strict)
     emit(checks, args.json)
-    return 1 if any(c.status == "FAIL" for c in checks) else 0
+    return 1 if any(item.status == "FAIL" for item in checks) else 0
 
 
 if __name__ == "__main__":

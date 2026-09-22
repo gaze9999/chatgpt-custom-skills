@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
+FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")
 VERSION_RE = re.compile(r"文件版本\s*[:：]\s*v\d+\b", re.IGNORECASE)
 
 
@@ -37,22 +38,19 @@ def main() -> int:
     lines = text.splitlines()
 
     headings: list[tuple[int, int, str]] = []
-    in_fence = False
-    fence_token = None
+    fence: tuple[str, int] | None = None
 
     for lineno, line in enumerate(lines, start=1):
-        stripped = line.lstrip()
-        if stripped.startswith("```") or stripped.startswith("~~~"):
-            token = stripped[:3]
-            if not in_fence:
-                in_fence = True
-                fence_token = token
-            elif token == fence_token:
-                in_fence = False
-                fence_token = None
+        fence_match = FENCE_RE.match(line)
+        if fence_match:
+            token = fence_match.group(1)
+            if fence is None:
+                fence = (token[0], len(token))
+            elif token[0] == fence[0] and len(token) >= fence[1] and not line[fence_match.end():].strip():
+                fence = None
             continue
 
-        if in_fence:
+        if fence is not None:
             continue
 
         match = HEADING_RE.match(line)
@@ -78,13 +76,17 @@ def main() -> int:
     else:
         result("PASS", "heading-hierarchy", "no skipped heading levels detected")
 
-    if in_fence:
+    if fence is not None:
         failures += 1
         result("FAIL", "code-fences", "unclosed fenced code block")
     else:
         result("PASS", "code-fences", "fenced code blocks are balanced")
 
-    trailing = [str(i) for i, line in enumerate(lines, start=1) if line.endswith((" ", "\t"))]
+    trailing = []
+    for lineno, line in enumerate(lines, start=1):
+        spaces = len(line) - len(line.rstrip(" "))
+        if line.endswith("\t") or spaces not in {0, 2}:
+            trailing.append(str(lineno))
     if trailing:
         warnings += 1
         result("WARN", "trailing-whitespace", f"lines: {', '.join(trailing[:10])}")

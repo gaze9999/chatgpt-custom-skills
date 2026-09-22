@@ -20,6 +20,7 @@ REFERENCE_HEADINGS = (
     "參考文獻",
     "引用文獻",
 )
+FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")
 IN_TEXT_RE = re.compile(r"\([A-ZÀ-ÖØ-Ý][^()]{0,80}?,\s*(?:19|20)\d{2}[a-z]?\)")
 NARRATIVE_RE = re.compile(r"\b[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ'’-]+\s+\((?:19|20)\d{2}[a-z]?\)")
 DOI_RE = re.compile(r"\b10\.\d{4,9}/[-._;()/:A-Z0-9]+\b", re.IGNORECASE)
@@ -36,6 +37,29 @@ def extract_text(path: Path) -> str:
     if suffix in {".md", ".markdown", ".txt"}:
         return path.read_text(encoding="utf-8")
     raise ValueError("This validator currently accepts Markdown or plain-text canonical content.")
+
+
+def without_fenced_code(text: str) -> str:
+    lines: list[str] = []
+    fence: tuple[str, int] | None = None
+    for line in text.splitlines():
+        match = FENCE_RE.match(line)
+        if match:
+            token = match.group(1)
+            if fence is None:
+                fence = (token[0], len(token))
+            elif token[0] == fence[0] and len(token) >= fence[1] and not line[match.end():].strip():
+                fence = None
+            continue
+        if fence is None:
+            lines.append(line)
+    return "\n".join(lines)
+
+
+def reference_heading(text: str) -> str | None:
+    options = "|".join(re.escape(item) for item in REFERENCE_HEADINGS)
+    match = re.search(rf"(?im)^\s*(?:#{{1,6}}\s*)?({options})\s*#*\s*$", text)
+    return match.group(1) if match else None
 
 
 def main() -> int:
@@ -58,8 +82,8 @@ def main() -> int:
         result("FAIL", "input", str(exc))
         return 2
 
-    lower = text.lower()
-    found_heading = next((h for h in REFERENCE_HEADINGS if h.lower() in lower), None)
+    text = without_fenced_code(text)
+    found_heading = reference_heading(text)
     if found_heading:
         result("PASS", "reference-section", f"detected heading/label: {found_heading}")
     else:

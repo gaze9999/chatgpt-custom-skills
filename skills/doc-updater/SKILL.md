@@ -25,19 +25,18 @@ When evidence or a target is missing, request only the information needed for co
 - Update only documents affected by public APIs, user-visible behavior, installation or configuration, deployment, migrations, compatibility, or established architecture descriptions. Internal refactors without behavior change normally do not require updates.
 - Read only the necessary diff and target sections, then make the smallest supported change. Do not promote internal details to public guarantees or add secrets or unnecessary personal data.
 - When a current-state document has a paired history or archive, keep the current document limited to current behavior, active work, unresolved decisions, and the latest verification boundary. Move superseded status, completed batches, dated execution details, old sync records, and obsolete navigation to history after confirming unique evidence is retained.
-- When identifiers are reformatted, apply the requested scheme to current records, record the old-to-new mapping in history, and preserve historical identifiers and anchors unless the user explicitly requests a historical rewrite.
+- When identifiers are reformatted, apply the requested scheme to current records and record the old-to-new mapping in history. Rewrite historical identifiers and anchors only on explicit user request.
 - Keep each new history entry to one or two concise paragraphs whenever that preserves the outcome, material evidence, and remaining verification limits. Use a longer entry only when required to retain unique information or when the user explicitly requests detail; do not turn command sequences or check-by-check narration into history.
-- When a compatible Python runtime is available, resolve bundled scripts relative to this Skill: use `scripts/scan_changed_files.py --repo <repo-root>` when impact discovery is needed, and for multiple targets use [Doc Update Rules](references/doc-update-rules.md) with `scripts/validate_doc_update_plan.py`. Otherwise use equivalent repository and document inspection; do not require installing the optional toolchain.
+- When impact discovery is needed and a compatible Python runtime is available, resolve and use `scripts/scan_changed_files.py --repo <repo-root>` relative to this Skill. Otherwise use equivalent repository inspection; do not require installing optional tooling.
 
 ## Local-first updates
 
-- Update local documentation by default. Do not read or write Notion unless the user explicitly requests Notion work; a general documentation-sync request is not enough.
+- Update local documentation by default. Notion discovery, access, comparison, validation, writes, and status reporting require the current request to explicitly name Notion or a Notion target; links, page IDs, snapshots, paired targets, prior sync arrangements, and `sync_mode` metadata do not satisfy this gate.
 - When synchronizing to Notion, do not copy local filesystem paths or relative Markdown links into the page. Link or mention only a confirmed Notion target; otherwise keep the label as plain text and omit the local path.
-- Existing page links, paired targets, prior sync arrangements, and `sync_mode: bidirectional` identify relationships, not permission to resume paused Notion synchronization.
-- Complete authorized local updates without waiting for Notion access or alignment. Preserve sync metadata, but do not advance Notion sync timestamps or claim both copies are aligned.
+- Complete authorized local updates independently. Preserve existing metadata only when it lies inside an edited local target, but do not use it to infer remote state or advance sync timestamps.
 - An explicit request to synchronize identified local and Notion targets is authorization for those targets; do not ask for duplicate confirmation. Resolve the exact targets and compare current content before writing, asking only if ambiguity would change scope or overwrite risk. Follow [Notion Sync Reader and Writer Contract](references/notion-sync-reader-writer-contract.md); do not blindly overwrite changes accumulated while sync was paused.
 - For Markdown replacement, use the bundled inspection, dry-run, and SHA-256 helpers when compatible tooling is available, or an equivalent optimistic-concurrency check in the active environment.
 
 ## Delivery
 
-Report evidence, local files changed, no-update decisions, and actual checks. When a Notion counterpart is relevant, state that it was intentionally not synchronized; do not treat this as a blocker for completed local work.
+Report evidence, local files changed, no-update decisions, and actual checks.

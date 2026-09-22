@@ -96,15 +96,15 @@ Choose the smallest documentation surface that keeps knowledge aligned.
 | internal architecture change | architecture doc, Codex context brief, memo |
 | bug fix with user-visible effect | changelog or memo when relevant |
 
-Do not create a new documentation surface unless the user asks for a new doc/memo or no existing target can represent the necessary update. Prefer patching the smallest existing section.
+Create a new documentation surface only when the user requests one or no existing target can represent the necessary update. Prefer patching the smallest existing section.
 
 ## Local-first documentation and Notion
 
-Update local documentation by default. Access Notion only when the user explicitly requests it. General sync wording, an existing page target, links, or bidirectional metadata do not authorize Notion access or resume paused synchronization.
+Update local documentation by default. Notion discovery, access, comparison, validation, writes, and status reporting require the current request to explicitly mention Notion or name a Notion target. General sync wording, a local file containing a Notion link or page ID, an uploaded snapshot, a paired target, a prior sync arrangement, or bidirectional metadata does not satisfy this gate.
 
 - Do not copy local filesystem paths or relative Markdown links into Notion. Replace them with a Notion page mention or link only when that exact Notion target has been confirmed; otherwise retain the label as plain text and omit the local path.
 
-Complete authorized local updates without waiting for Notion. Preserve relationship metadata, but do not change Notion sync timestamps or claim remote alignment. If a counterpart exists, report it as intentionally not synchronized.
+Complete authorized local updates independently. Preserve relationship metadata only when it lies inside an edited local target, but do not infer remote state or change sync timestamps.
 
 When the user explicitly requests Notion synchronization, that request authorizes the identified targets; do not request duplicate confirmation:
 
@@ -121,7 +121,7 @@ When a target set separates current status from history or archives, preserve th
 - Keep the current document focused on current behavior, active work, unresolved decisions, and the latest verification boundary.
 - Put completed or superseded work, dated execution details, detailed check results, version hashes, sync events, and obsolete links in the history target.
 - Before removing content from the current document, confirm that unique evidence is already present in history or move it there. Avoid duplicating the same full record in both places.
-- If the user specifies an identifier format, apply it consistently to current records and record an old-to-new mapping in history. Preserve historical identifiers and anchors as evidence unless the user explicitly requests rewriting them.
+- If the user specifies an identifier format, apply it consistently to current records and record an old-to-new mapping in history. Rewrite historical identifiers and anchors only on explicit user request.
 - Keep each new history entry to one or two concise paragraphs when possible. Combine the outcome, material evidence, and remaining verification limits; link to detailed evidence instead of copying command sequences or check-by-check narration. Use a longer entry only when necessary to retain unique information or when the user explicitly requests detail.
 
 ## Safe update style
@@ -144,7 +144,6 @@ Before finalizing, confirm:
 - every affected target is listed in the update plan or final summary
 - important no-update decisions are recorded
 - breaking changes and migrations are clearly marked
-- Notion was only used when explicitly in scope
-- dual Notion / Markdown updates were explicitly requested by the user
+- any Notion access or dual-target update had explicit user authorization
 - Notion and Markdown targets are semantically aligned when both are updated
 - unverified items are explicitly labeled

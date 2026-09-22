@@ -3,7 +3,7 @@ interface:
   short_description: "Align existing docs from verified implementation changes"
   icon_small: "./assets/icon-small.svg"
   icon_large: "./assets/icon.svg"
-  default_prompt: "Use $doc-updater to minimally update identified existing documentation from concrete implementation evidence; access Notion or sync both targets only when the current request explicitly includes them."
+  default_prompt: "Use $doc-updater to minimally update identified existing documentation from concrete implementation evidence. Access or report on Notion only when the request explicitly names Notion or a Notion target."
 
 policy:
   allow_implicit_invocation: true

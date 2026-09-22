@@ -8,7 +8,7 @@ Use this reference only when the user explicitly requests Angular signal inputs 
 - Replace eligible `@Output` plus `EventEmitter` declarations with `output()`
 - Preserve every external property name, event name, alias, payload type, default value, and parent binding
 - Remove `Input`, `Output`, and `EventEmitter` imports only when no remaining declaration uses them
-- Do not convert input/output pairs to `model()` unless the user explicitly requests it
+- Convert input/output pairs to `model()` only when the user explicitly requests it
 - Do not add wrappers around `input()` or `output()` because Angular recognizes these APIs only in supported property initializer positions
 
 Use `input.required<T>()` only when an authoritative contract or every valid caller proves that the input is required. A missing default or a non-null type alone is not proof. Otherwise preserve optionality and the existing default with `input<T>(defaultValue)`.

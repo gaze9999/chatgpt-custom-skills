@@ -78,7 +78,7 @@ def build_prompt(
     if signal_io:
         signal_requirements = """
 
-Signal I/O mode is explicitly authorized. Read the skill's `references/signal-io-migration.md`, verify the target Angular version, and migrate eligible `@Input` declarations to `input()` or `input.required()` and eligible `@Output` plus `EventEmitter` declarations to `output()`. Preserve binding names, aliases, payload types, defaults, optionality, and parent contracts. Update class and template reads to call input signals, remove obsolete imports, and handle setter inputs, direct child assignments, `ngOnChanges`, tests, and two-way bindings without changing behavior. Do not use `model()` unless separately requested. Leave any unsafe conversion unchanged and report it as an exception."""
+Signal I/O mode is explicitly authorized. Read the skill's `references/signal-io-migration.md`, verify the target Angular version, and migrate eligible `@Input` declarations to `input()` or `input.required()` and eligible `@Output` plus `EventEmitter` declarations to `output()`. Preserve binding names, aliases, payload types, defaults, optionality, and parent contracts. Update class and template reads to call input signals, remove obsolete imports, and handle setter inputs, direct child assignments, `ngOnChanges`, tests, and two-way bindings without changing behavior. Use `model()` only when separately requested. Leave any unsafe conversion unchanged and report it as an exception."""
 
     return f"""Use $component-member-order to organize the Angular component class members in {project_name}.
 

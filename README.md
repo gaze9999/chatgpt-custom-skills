@@ -1,217 +1,101 @@
 # ChatGPT Custom Skills
 
-可重複使用的 ChatGPT / Codex Skills 集合，集中管理 Skill 行為、內部資源與可選的 agent metadata。
+可跨 repository 重用的 ChatGPT / Codex Skills 集合
 
-本 repository 的目標是讓不同任務可以直接重用已整理好的 Skill，同時維持清楚的責任邊界，避免把一次性需求或完整基礎 prompt 重複寫在多個位置。
+此 repository 是自訂 Skill 的唯一可版控來源 本機 `Codex skills` 目錄只作為安裝鏡像, 避免 repo 與個人電腦雙向手動修改後產生漂移
 
-## Skills
+## Skill catalog
 
-| Skill | 路徑 | 用途 | 主要輸出 |
-|---|---|---|---|
-| [Agent Governance](./skills/agent-governance/SKILL.md) | `skills/agent-governance` | 盤點並重整 `AGENTS.md`、subagent 職責與指示分層，移除不必要的重複規則 | Agent / subagent 治理規範修改 |
-| [Component Member Order](./skills/component-member-order/SKILL.md) | `skills/component-member-order` | 依成員責任與功能流程安全整理 Angular Component class，保留 Decorator、既有註解、初始化順序與 public interface | Component 成員排序，或限定檔案範圍的執行 Prompt |
-| [Coding Prompt](./skills/coding-prompt/SKILL.md) | `skills/coding-prompt` | 僅在明確要求 prompt 或 handoff 時，將最小必要需求整理成可複製的 coding agent prompt，並推薦模型與 reasoning | 可複製的 coding task prompt、模型與 reasoning 建議 |
-| [Context Brief](./skills/context-brief/SKILL.md) | `skills/context-brief` | 將會跨任務重用的規格書、API 文件、schema、需求文件或整合指南整理成 Markdown context brief，不作為聊天或進度摘要 | Codex implementation-contract brief |
-| [Document Production](./skills/document-production/SKILL.md) | `skills/document-production` | 將使用者內容、來源與版面需求整理成可直接交付的正式文件；未指定格式時預設 PDF | PDF；或依需求輸出 DOCX / Markdown 等支援格式 |
-| [Editorial Illustration](./skills/editorial-illustration/SKILL.md) | `skills/editorial-illustration` | 將使用者提供的圖片、可選視覺調整與內建 base prompt 合併後，直接執行 editorial illustration 圖片生成 | 每張來源圖對應一張獨立插畫 |
-| [Doc Updater](./skills/doc-updater/SKILL.md) | `skills/doc-updater` | 程式改版、PR、diff、release 或 refactor 後，更新 docs、Markdown memo、Notion memo、changelog、API reference 或 Codex context brief | 與實作變更對齊的文件／memo 更新 |
+| 類別 | Skill | 用途 |
+|---|---|---|
+| Agent 與 context | [Agent Governance](./skills/agent-governance/SKILL.md) | 重整 global, root, nested `AGENTS.md`, tool-specific routing 與 subagent 職責 |
+| Agent 與 context | [Coding Prompt](./skills/coding-prompt/SKILL.md) | 僅在明確要求 prompt 或 handoff 時產生可執行的 coding prompt 與當下 model 建議 |
+| Agent 與 context | [Context Brief](./skills/context-brief/SKILL.md) | 將已指定規格, API, schema 或整合文件整理成可重用 implementation contract |
+| AI 與媒體 | [AI Application Engineering](./skills/ai-application-engineering/SKILL.md) | 實作或診斷 LLM, Agent, Tool Calling, RAG, Embedding 與 model runtime |
+| AI 與媒體 | [ComfyUI Workflow](./skills/comfyui-workflow/SKILL.md) | 維護可重現的 Stable Diffusion / ComfyUI graph, model 與硬體設定 |
+| AI 與媒體 | [Editorial Illustration](./skills/editorial-illustration/SKILL.md) | 依固定 editorial illustration 視覺方向處理使用者提供的圖片 |
+| Frontend 與遊戲 | [Component Member Order](./skills/component-member-order/SKILL.md) | 安全整理 Angular Component class member 與可選 Signal I/O 遷移 |
+| Frontend 與遊戲 | [Unity Development](./skills/unity-development/SKILL.md) | 依實際 Unity version, package, serialized asset 與 build target 開發及驗證 |
+| Frontend 與遊戲 | [Vue Development](./skills/vue-development/SKILL.md) | 依實際 Vue, Nuxt 或 Vite stack 開發並保留 component, state, SSR 與 build contracts |
+| 文件 | [Doc Updater](./skills/doc-updater/SKILL.md) | 實作後依 verified diff 同步必要的 docs, memo, changelog 或 API reference |
+| 文件 | [Document Production](./skills/document-production/SKILL.md) | 產生可交付的 PDF, DOCX 或 Markdown 正式文件 |
+| 文件 | [README Maintainer](./skills/readme-maintainer/SKILL.md) | 依 repository 證據建立或大幅重整 README |
+| Rules 與 Filter | [Filter Rule Maintenance](./skills/filter-rule-maintenance/SKILL.md) | 維護 AdGuard, uBlock Origin, DNS, hosts 與相似 filter/rewrite rules |
 
-## 設計原則
+## 分層原則
 
-- 每個 Skill 只負責明確的一類任務。
-- 共用或較長的基礎內容放在 Skill 自己的 `references/` 中，避免在多處維護相同 prompt 或規範。
-- 專案層級、角色層級與單次任務的指示盡量分離，降低規則重複與 context 成本。
-- README 只提供開始使用所需的資訊；各 Skill 的完整行為以各自的 `SKILL.md` 為準。
+- Global `AGENTS.md` 只保留跨專案且長期穩定的使用者偏好, 安全邊界與執行原則
+- Repository `AGENTS.md` 保留該專案的 Architecture, Runtime, Contract, Ownership 與驗證邊界
+- Custom Skill 保存會跨專案重複使用但只在特定任務需要的流程與領域知識
+- 單次任務 prompt 保存目前 goal, scope, acceptance criteria, authorization, progress 與 stop condition
+- `SKILL.md` 保持短而可判斷何時使用, 詳細但非每次需要的內容放入 `references/` 並由任務條件載入
+- 不將單一專案路徑, 交易規格, 私有 endpoint, model workaround 或暫時環境狀態寫成通用 Skill
 
-## 安裝
+## 安裝與同步
 
-每個 Skill 都可以獨立安裝，不需要安裝整個 repository 內的其他 Skill。
+每個 Skill 可獨立安裝 Repo 內容是 source of truth, 同步方向固定為 repository `skills/<skill-name>` → 本機 Codex skills 目錄
 
-### 手機／平板 ChatGPT App
+本機安裝或更新時:
 
-行動端建議透過 **GitHub Releases 的單一 Skill ZIP asset** 安裝，不需要先下載整個 repository，也不需要在手機／平板手動解壓縮 repository ZIP。
+1. 確認 repository working tree 與預期變更
+2. 驗證目標 Skill 的 `SKILL.md` 與 `agents/openai.yaml`
+3. 僅複製需要新增或更新的 Skill 目錄, 不覆寫 `.system`, plugin 或其他非此 repository 管理的 Skill
+4. 比對 repo 與本機鏡像的相對路徑及檔案 hash
+5. 重新載入支援 Skill discovery 的用戶端
 
-1. 開啟本 repository 的 **Releases**：
+不要直接在本機安裝鏡像做永久修改 若需要變更, 先改 repository, 驗證後再單向同步
 
-   ```text
-   https://github.com/gaze9999/chatgpt-custom-skills/releases
-   ```
+## Repository 驗證
 
-2. 選擇要使用的 release。
+以單一精簡指令檢查所有 Skill metadata, Markdown links 與 Python syntax, 避免逐檔讀取與重複輸出:
 
-3. 在 **Assets** 中下載要安裝的單一 Skill ZIP，例如：
+```powershell
+python scripts/audit_skills.py
+```
 
-   ```text
-   agent-governance.zip
-   component-member-order.zip
-   coding-prompt.zip
-   context-brief.zip
-   document-production.zip
-   editorial-illustration.zip
-   doc-updater.zip
-   ```
+同步本機鏡像後可一併比對檔案清單與 hash:
 
-4. 不要自行解壓縮。ZIP 內應保留該 Skill 的完整目錄內容，例如：
+```powershell
+python scripts/audit_skills.py --installed-root "$env:USERPROFILE\.codex\skills"
+```
 
-   ```text
-   document-production/
-   ├── SKILL.md
-   ├── agents/
-   │   └── openai.yaml
-   └── references/
-       └── document-production-guidelines.md
-   ```
+### ChatGPT App
 
-5. 在 ChatGPT App 開啟 **Plugins → Skills → Create → Upload from your computer**。
+行動端可從 [GitHub Releases](https://github.com/gaze9999/chatgpt-custom-skills/releases) 下載單一 Skill ZIP, 再到 `Plugins → Skills → Create → Upload from your computer` 上傳
 
-6. 從手機／平板的檔案選擇器直接選取剛才下載的 Skill ZIP。
+ZIP 頂層需保留單一同名 Skill 目錄:
 
-7. 等待 ChatGPT 完成掃描與安裝，再到 Skills 清單確認對應名稱是否出現。
+```text
+skill-name.zip
+└── skill-name/
+    ├── SKILL.md
+    ├── agents/
+    │   └── openai.yaml
+    └── references/
+```
 
 ### Desktop / Web
 
-若目前使用的 ChatGPT / Codex 用戶端支援從 GitHub repository 安裝或載入 Skill，可指定：
+用戶端支援 GitHub repository 安裝時指定:
 
 ```text
 Repository: gaze9999/chatgpt-custom-skills
 Skill path: skills/<skill-name>
 ```
 
-例如：
+各 Skill 可獨立安裝, 不需要一次載入整個 `skills/` 目錄
 
-```text
-Repository: gaze9999/chatgpt-custom-skills
-Skill path: skills/document-production
-```
+## Release 封裝
 
-各 Skill 可獨立安裝；不需要一次載入整個 `skills/` 目錄。
+- 每個 release 為每個 Skill 提供獨立 ZIP asset, 不只依賴 GitHub 自動產生的 source archive
+- ZIP asset basename 與 Skill 目錄相同, 頂層只包含該 Skill 目錄
+- 封裝前排除 `__pycache__`, `*.pyc`, local logs, temporary output, secret 與 machine-specific files
+- 發布前驗證 Skill metadata, ZIP 結構, repository diff 與實際 asset 清單
 
-若使用上傳方式，也可以直接使用 Releases 中對應的單一 Skill ZIP asset。
+## 檔案角色
 
-### 本機查看內容
-
-```bash
-git clone https://github.com/gaze9999/chatgpt-custom-skills.git
-cd chatgpt-custom-skills
-```
-
-## Release 封裝規則
-
-為了讓手機／平板可以直接安裝，每個 release 應另外提供每個 Skill 的獨立 ZIP asset，而不是只依賴 GitHub 自動產生的 repository source archive。
-
-每個 ZIP 的頂層應直接包含單一 Skill 目錄，例如：
-
-```text
-document-production.zip
-└── document-production/
-    ├── SKILL.md
-    ├── agents/
-    │   └── openai.yaml
-    └── references/
-        └── document-production-guidelines.md
-```
-
-Release assets 建議保持與 Skill 目錄相同的 basename，方便辨識與版本管理。
-
-## 使用方式
-
-### Agent Governance
-
-適合處理：
-
-```text
-盤點這個 repo 的 AGENTS.md 與 subagent 規則，移除跨層重複，保留必要的專案約束。
-```
-
-此 Skill 聚焦在 agent governance，不應順便修改 production code。
-
-目前治理方向以精簡、直接執行與成果導向為主：移除舊模型時代累積的固定流程與重複提示；主 agent 在已授權時直接完成工作；subagent 只用於可獨立切分且確實能改善品質、時間或上下文隔離的工作，不視為省 token 手段。
-
-### Coding Prompt
-
-適合處理：
-
-```text
-把這個需求整理成可以直接交給 coding agent 的 task prompt，保留 scope、contract、acceptance criteria 與 stop conditions，並推薦模型與 reasoning。
-```
-
-輸出包含一個獨立的 `text` 程式碼區塊，手機 App 可用程式碼區塊的複製控制項一次複製完整 prompt；模型與 reasoning 建議會放在區塊後方。不重複一般 coding style、repo 已存在的規則或可直接查得的版本資訊。
-
-只有使用者明確要求 coding prompt、delegation prompt 或 handoff 時才使用此 Skill。若使用者要求調查、修改、修正或實作，agent 應直接完成工作，不以產生 prompt 取代執行。
-
-### Component Member Order
-
-適合處理：
-
-```text
-使用 $component-member-order 整理這個 Angular 功能目錄內的 Component class 成員順序，同類成員不留空行，依畫面區塊與功能流程排列方法，保留既有 JSDoc 與執行行為。
-```
-
-此 Skill 會先依成員責任建立大類，再依實際畫面區塊或功能流程排列方法，不採字母排序。Class field initializer 存在相依時會優先保留安全的執行順序，並回報無法套用標準順序的例外。使用者明確要求時，也可將 eligible `@Input`／`@Output` 遷移為 Angular Signal API，並同步檢查 Template、setter Input、two-way binding 與測試。若只需要交接 Prompt，可使用 Skill 內的 Python script 掃描指定目錄並產生限定檔案清單，加入 `--signal-io` 可產生 Signal I/O 遷移要求。
-
-### Context Brief
-
-適合處理：
-
-```text
-把這份 API 文件整理成之後可以重複給 Codex 使用的 context brief Markdown，保留 endpoint、schema、error handling 與 open questions。
-```
-
-此 Skill 聚焦在長文件壓縮成可重用 Codex 背景，不負責直接實作，也不取代單次任務 prompt。輸出應保留實作契約、限制、例外情境與來源追蹤，避免之後每次都重新貼完整規格書。
-
-Context Brief 不依聊天訊息數或 compaction 次數自動產生。當同一份規格、API、schema 或驗收條件需要跨任務重用，或反覆讀取大型權威來源已產生成本時才建立；聊天進度、修改檔案、驗證結果與下一步使用 task handoff 保存。
-
-### Document Production
-
-未指定輸出格式時預設產生 PDF；使用者可以明確要求 DOCX、Markdown 或多格式輸出。
-
-例如：
-
-```text
-把這些資料整理成正式技術教學文件，包含目錄、章節化說明、範例與參考資料，預設 PDF。
-```
-
-或：
-
-```text
-同一份內容請輸出 PDF、DOCX 與 Markdown。
-```
-
-Pipeline 會依 `references/document-production-guidelines.md` 處理檔名、文件版本、目錄、分頁、表格、引用與最終 QA，並直接交付文件 artifact。
-
-### Editorial Illustration
-
-使用時提供一張或多張來源圖片，可再用自然語言補充當次調整，例如：
-
-```text
-人物再小一點，右側增加留白，整體色調稍微偏暖。
-```
-
-Pipeline 會將：
-
-```text
-來源圖片
-+ references/base-prompt.md
-+ 使用者當次可選調整
-→ 直接圖片生成
-```
-
-每張來源圖片獨立處理，不把多張圖片自動合併成 collage；正常流程直接輸出圖片，不另外輸出組裝後的 prompt。
-
-### Doc Updater
-
-適合處理：
-
-```text
-這次功能改完後，根據目前 diff 更新 README、docs、memo、Notion 和 Codex context brief。
-```
-
-此 Skill 聚焦在 implementation 之後的文件同步。它會先判斷程式變更是否真的影響文件，再更新必要的 Markdown、Notion memo、changelog、API reference 或 Codex context brief；內部 refactor、test-only、format-only 變更通常不更新文件。
-
-### 檔案角色
-
-- `SKILL.md`：Skill 的主要行為、適用範圍、輸入／輸出與限制。
-- `agents/openai.yaml`：該 Skill 的 agent / interface metadata。
-- `references/`：Skill 執行時需要引用、但不適合重複塞進 `SKILL.md` 的內部內容。
-- `assets/`：icon、模板或執行時可能使用但通常不需讀入 context 的素材。
-- `scripts/`：可重複、可程式化的掃描、驗證或轉換流程。
+- `SKILL.md`: Skill 的啟用條件, 工作流程, 邊界與輸出
+- `agents/openai.yaml`: Skill 的 interface metadata 與預設啟用 prompt
+- `references/`: 只在相關子任務才載入的詳細知識
+- `assets/`: Icon, template 或不需常駐 context 的素材
+- `scripts/`: 可重複的掃描, 驗證或轉換流程

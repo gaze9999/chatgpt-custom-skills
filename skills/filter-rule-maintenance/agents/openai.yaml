@@ -1,0 +1,7 @@
+interface:
+  display_name: "Filter Rule Maintenance"
+  short_description: "Maintain precise blocking and rewrite rules safely"
+  default_prompt: "Use $filter-rule-maintenance to identify the active filter engine and evidence, apply the narrowest parser-compatible rule change, and verify intended matches, near misses, precedence, and false-positive risk."
+
+policy:
+  allow_implicit_invocation: true

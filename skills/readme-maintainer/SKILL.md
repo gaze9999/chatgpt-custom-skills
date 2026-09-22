@@ -1,0 +1,38 @@
+---
+name: readme-maintainer
+description: Create, restructure, or substantially improve a repository README from verified source, configuration, scripts, deployment, and documentation evidence. Use for README-focused work, not routine post-change documentation synchronization.
+---
+
+# README Maintainer
+
+Produce a README that is accurate, scannable, usable by a new developer, and suitable for public presentation when the repository permits it.
+
+## Activation and boundary
+
+- Use when the user explicitly asks to create, rewrite, restructure, audit, or substantially improve a README.
+- For documentation synchronization after an implementation change, use the applicable documentation-update workflow instead unless the README itself needs substantial redesign.
+- Do not modify application code, deployment, manifests, or project behavior merely to make the README easier to write.
+
+## Establish evidence
+
+- Read the current README, manifests, lockfiles, runtime/version files, scripts, entry points, configuration examples, build/deploy files, tests, screenshots or demos, `docs/`, `CONTRIBUTING.md`, `CHANGELOG.md`, and `LICENSE` as applicable.
+- Derive features, architecture, requirements, commands, environment variables, package manager, build outputs, and deployment behavior from the repository. Do not infer capabilities from the repository name or stale prose.
+- Resolve the intended audience and language. Use the language selected by the user or applicable project guidance; otherwise preserve the repository's established documentation language.
+- Treat unverified commands, screenshots, badges, coverage, compatibility, roadmap items, and deployment status as unresolved rather than claims.
+
+## Write only useful sections
+
+- Open with the purpose, problem solved, and core capability in a short factual introduction.
+- Add only sections supported by the project, such as Features, Tech Stack, Requirements, Installation, Configuration, Usage, Development, Testing, Build, Deployment, Architecture, Screenshots/Demo, Roadmap, Contributing, or License.
+- Make setup and common usage directly actionable. Use exact repository commands and safe placeholders for configuration.
+- Keep code examples short and representative. Distinguish local development, production build, and deployment.
+- Use a compact diagram only when it materially clarifies a non-trivial architecture, data flow, agent flow, RAG pipeline, or model workflow.
+- Use informative badges only when their target and status are real. Prefer repository-relative links for internal documents and assets.
+- Put detailed specifications, research, or long operational procedures in dedicated docs and link to them instead of duplicating them.
+- Never include secrets, credentials, private endpoints, personal absolute paths, production data, unredacted logs, or unsafe `.env` values.
+
+## Verify and deliver
+
+- Check headings, links, referenced paths, examples, configuration keys, and commands against repository state. Run safe existing commands only when needed and authorized.
+- Confirm that the README does not promise unimplemented behavior or tests that were not run. Clearly label optional, planned, or unverified material.
+- Return the changed README and a concise note of evidence used, actual checks, and any command, demo, deployment, badge, screenshot, or compatibility claim that remains unverified.

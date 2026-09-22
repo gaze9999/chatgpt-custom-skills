@@ -3,7 +3,7 @@ interface:
   short_description: "Create coding prompts only when explicitly requested"
   icon_small: "./assets/icon-small.svg"
   icon_large: "./assets/icon.svg"
-  default_prompt: "Use $coding-prompt only when the user explicitly wants a reusable coding-agent prompt or handoff. Preserve scope, contracts, constraints, acceptance criteria, open items, and stop conditions; do not substitute prompt generation for a direct implementation request."
+  default_prompt: "Use $coding-prompt only when the user explicitly wants a reusable coding-agent prompt or handoff. Preserve task contracts, then recommend one model and reasoning combination supported by the target environment using current official guidance; do not execute the generated prompt."
 
 policy:
   allow_implicit_invocation: true

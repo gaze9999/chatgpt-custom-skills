@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 import shutil
 import subprocess
 import tempfile
@@ -89,7 +90,12 @@ def _pdf_images(path: Path, max_items: int, destination: Path) -> list[tuple[str
     if result.returncode != 0:
         detail = result.stderr.strip() or "unknown pdftoppm error"
         raise RuntimeError(f"PDF rasterization for OCR failed: {detail}")
-    return [(f"PDF page {index}", image) for index, image in enumerate(sorted(destination.glob("pdf-page-*.png")), start=1)]
+    def page_number(image: Path) -> int:
+        match = re.search(r"-(\d+)$", image.stem)
+        return int(match.group(1)) if match else 0
+
+    images = sorted(destination.glob("pdf-page-*.png"), key=page_number)
+    return [(f"PDF page {page_number(image)}", image) for image in images]
 
 
 def _ooxml_images(path: Path, max_items: int, destination: Path) -> list[tuple[str, Path]]:
