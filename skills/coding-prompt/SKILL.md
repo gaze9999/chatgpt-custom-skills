@@ -36,6 +36,7 @@ Create a minimal handoff-ready prompt when the requested deliverable is the prom
 
 - Complete the prompt first, then recommend exactly one model and supported reasoning level for the resulting task
 - Preserve an explicit user selection. Otherwise base the choice on task uncertainty, interacting logic, risk, context, coordination, and verification burden
+- Prefer an efficient supported model for an explicitly bounded task with a known approach. Choose a stronger reasoner when the task still requires deciding the approach, root cause, or architecture; do not use progressively higher reasoning levels to retry the same unresolved problem
 - Verify current model availability when a concrete model name is required. If it cannot be verified, give concise selection criteria and mark the concrete choice unresolved
 - Keep the recommendation outside the copyable prompt. A recommendation does not switch models or change project routing
 
