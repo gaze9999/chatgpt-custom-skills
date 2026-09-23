@@ -1,9 +1,9 @@
 interface:
   display_name: "Coding Prompt"
-  short_description: "Create coding prompts only when explicitly requested"
+  short_description: "Create concise cross-project coding prompts"
   icon_small: "./assets/icon-small.svg"
   icon_large: "./assets/icon.svg"
-  default_prompt: "Use $coding-prompt only when the user explicitly wants a reusable coding-agent prompt or handoff. Preserve task contracts, then recommend one model and reasoning combination supported by the target environment using current official guidance; do not execute the generated prompt."
+  default_prompt: "Use $coding-prompt to create a minimal reusable coding-agent prompt only when explicitly requested. Put the complete prompt alone in one mobile-copyable text code block, keep task-specific positive gates, and recommend one supported model and reasoning combination outside the block without executing the prompt."
 
 policy:
   allow_implicit_invocation: true
