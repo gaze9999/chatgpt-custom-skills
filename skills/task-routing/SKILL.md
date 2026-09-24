@@ -1,6 +1,6 @@
 ---
 name: task-routing
-description: Choose between continuing a Codex task, creating a separate task, forking a conversation, and using subagents, then prepare a compact handoff when needed. Use for explicit routing questions or an authorized continuing coordinator, not ordinary implementation or AGENTS.md maintenance.
+description: Choose between continuing a Codex task, creating a separate task, forking a conversation, and using subagents, then prepare a compact handoff when needed. Use for explicit routing questions, conditional routing instructions in a user turn, or an authorized continuing coordinator, not ordinary implementation or AGENTS.md maintenance.
 metadata:
   short-description: Task routing and context handoff
 ---
@@ -13,16 +13,17 @@ Keep execution with the smallest owner that can complete and verify the outcome.
 
 - Identify the current outcome, what the user authorized, whether a continuing coordinator role was assigned, and which decisions remain unresolved.
 - Check whether the current environment actually supports creating tasks, forking conversations, using subagents, and choosing a checkout or worktree. This skill does not grant permission to use any of them. Create a separate user-owned task only when the user explicitly authorized that action; follow current user, project, and runtime limits for subagents and forks.
+- Distinguish a request to recommend a route from an instruction to carry it out. Invoking this skill or asking which route fits does not itself authorize a new user-owned task. A user instruction in the current turn to create and assign a separate task if it fits stated conditions is explicit conditional authorization, not a mandate to create one; apply the large, multi-turn phase threshold below and execute that route only when the conditions and available tools permit. Apply the same distinction to a requested fork or subagent delegation.
 - If the selected route is unavailable or unauthorized, continue the work that remains in scope and describe the required handoff. Do not silently substitute a subagent for a requested user-owned task.
 - Produce only a prompt or plan when the user requested that artifact. Otherwise complete authorized work or start the authorized execution route directly.
 
 ## Choose the owner
 
 1. Continue in the current task when one outcome remains active, the steps depend on each other, or the task can still use its retained decisions reliably. A continuing coordinator may directly complete small connected work and keep the current decisions, progress, and next-step order.
-2. Create a separate task for a distinct, independently reviewable deliverable or a bounded phase that needs its own multi-turn implementation and follow-up. A continuing coordinator may keep that role, but must inspect the execution task's result before advancing its plan.
-3. Fork a conversation when a different path needs the completed history of the current conversation. Give the fork its own concrete assignment and confirm critical decisions against current sources; inherited history alone does not define its work or restore details lost through compaction. A fork does not clear stale context. When the aim is a clean context, use a fresh task with a compact handoff instead.
+2. Create a separate task only for a large, independently reviewable phase likely to need multiple turns of execution and follow-up, when the user authorized task creation. A continuing coordinator may keep that role, but must inspect the execution task's result before advancing its plan.
+3. For an authorized separate phase, fork a conversation when the execution needs the completed history of the current conversation. Give the fork its own concrete assignment and confirm critical decisions against current sources; inherited history alone does not define its work or restore details lost through compaction. A fork does not clear stale context. When the aim is a clean context, use a fresh task with a compact handoff instead.
 4. Use a subagent for a bounded slice inside the current task when independent ownership, parallel speed, or context isolation outweighs coordination and review cost. Keep dependent steps and shared-file edits with one owner. The parent integrates and verifies the returned work.
-5. Use a temporary side conversation only for a focused detour that does not need a durable owner, when that feature is available.
+5. Use a temporary side conversation only when the user requests a separate focused detour and that feature is available.
 
 Do not route work by a fixed number of turns, tokens, compactions, elapsed hours, or phase names. Resolve uncertain architecture or requirements with a capable owner before handing a known execution method to another agent. Do not claim a cost or quality gain without measured evidence.
 

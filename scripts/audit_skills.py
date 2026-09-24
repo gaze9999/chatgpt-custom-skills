@@ -67,7 +67,14 @@ def audit_skill(skill: Path, errors: list[str]) -> None:
 
 
 def audit_links(repo: Path, errors: list[str]) -> int:
-    documents = [repo / "README.md", *sorted((repo / "skills").rglob("*.md"))]
+    global_agents = repo / "agents" / "AGENTS.md"
+    agent_guide = repo / "agents" / "README.md"
+    documents = [
+        repo / "README.md",
+        *([global_agents] if global_agents.is_file() else []),
+        *([agent_guide] if agent_guide.is_file() else []),
+        *sorted((repo / "skills").rglob("*.md")),
+    ]
     checked = 0
     for document in documents:
         text = document.read_text(encoding="utf-8")
@@ -153,6 +160,10 @@ def main() -> int:
         return 2
 
     errors: list[str] = []
+    if not (repo / "agents" / "AGENTS.md").is_file():
+        errors.append("missing_global:agents/AGENTS.md")
+    if not (repo / "agents" / "README.md").is_file():
+        errors.append("missing_agent_guide:agents/README.md")
     skills = sorted(path for path in skill_root.iterdir() if path.is_dir())
     for skill in skills:
         audit_skill(skill, errors)

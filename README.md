@@ -1,8 +1,8 @@
-# ChatGPT Custom Skills
+# Codex Setup
 
-可跨 repository 重用的 ChatGPT / Codex Skills 集合
+可跨電腦與 repository 使用的 global `AGENTS.md` 與 ChatGPT / Codex Skills
 
-此 repository 是自訂 Skill 的唯一可版控來源 本機 `Codex skills` 目錄只作為安裝鏡像, 避免 repo 與個人電腦雙向手動修改後產生漂移
+此 repository 是 [global `AGENTS.md`](./agents/AGENTS.md) 與自訂 Skill 的可版控來源 本機 Codex 設定目錄只作為安裝鏡像, 避免不同電腦雙向手動修改後產生漂移 [Agent 治理說明](./agents/README.md) 記錄分層與同步邊界
 
 ## Skill catalog
 
@@ -36,6 +36,19 @@
 
 每個 Skill 可獨立安裝 Repo 內容是 source of truth, 同步方向固定為 repository `skills/<skill-name>` → 本機 Codex skills 目錄
 
+### Global AGENTS.md
+
+跨電腦使用時, 先 clone 此 repository, 再從 repository `agents/AGENTS.md` 單向安裝至 `$CODEX_HOME/AGENTS.md`; 未設定 `CODEX_HOME` 時使用個人目錄的 `.codex/AGENTS.md` Repo 內的檔案不會因 clone 而自動成為 global 指示
+
+```powershell
+python scripts/install_global_agents.py
+python scripts/install_global_agents.py --install
+```
+
+第一行只比對內容, 第二行只在目標不存在或內容已相同時安裝 若另一台電腦已有不同的 global 設定, 先檢視與合併; 確認要以 repo 版本取代時, 使用 `--install --replace`, script 會先將舊檔備份在該電腦的 Codex 設定目錄下 執行後再次用不帶參數的指令比對
+
+### Skills
+
 本機安裝或更新時:
 
 1. 確認 repository working tree 與預期變更
@@ -62,7 +75,7 @@ python scripts/audit_skills.py --installed-root "$env:USERPROFILE\.codex\skills"
 
 ### ChatGPT App
 
-行動端可從 [GitHub Releases](https://github.com/gaze9999/chatgpt-custom-skills/releases) 下載單一 Skill ZIP, 再到 `Plugins → Skills → Create → Upload from your computer` 上傳
+行動端可從 [GitHub Releases](https://github.com/gaze9999/codex-setup/releases) 下載單一 Skill ZIP, 再到 `Plugins → Skills → Create → Upload from your computer` 上傳
 
 ZIP 頂層需保留單一同名 Skill 目錄:
 
@@ -80,7 +93,7 @@ skill-name.zip
 用戶端支援 GitHub repository 安裝時指定:
 
 ```text
-Repository: gaze9999/chatgpt-custom-skills
+Repository: gaze9999/codex-setup
 Skill path: skills/<skill-name>
 ```
 
@@ -95,6 +108,8 @@ Skill path: skills/<skill-name>
 
 ## 檔案角色
 
+- `agents/AGENTS.md`: 跨專案常駐指示的可攜 source of truth
+- `agents/README.md`: Agent 指示的分層, 授權與同步方式
 - `SKILL.md`: Skill 的啟用條件, 工作流程, 邊界與輸出
 - `agents/openai.yaml`: Skill 的 interface metadata 與預設啟用 prompt
 - `references/`: 只在相關子任務才載入的詳細知識
