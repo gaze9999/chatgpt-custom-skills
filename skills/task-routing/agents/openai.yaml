@@ -1,0 +1,7 @@
+interface:
+  display_name: "Task Routing"
+  short_description: "Choose a task owner and prepare a compact handoff"
+  default_prompt: "Use $task-routing to decide whether this Codex work should continue here, move to a separate task, fork the conversation, or use a subagent. Check current authorization and available tools, then hand off only the state the next owner needs."
+
+policy:
+  allow_implicit_invocation: true
