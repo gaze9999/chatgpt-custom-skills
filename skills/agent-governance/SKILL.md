@@ -1,6 +1,6 @@
 ---
 name: agent-governance
-description: Audit, simplify, or restructure AGENTS.md, subagent roles, model routing, and instruction layering for a project or portable setup. Use for agent-governance work, not ordinary application implementation or general code review.
+description: Create, audit, or simplify project AGENTS.md layers and Codex subagent roles. Use for agent-governance work, including a new project setup, not ordinary implementation or general code review.
 metadata:
   short-description: Agent governance, role boundaries, and instruction minimization
 ---
@@ -15,6 +15,13 @@ Keep the smallest instruction set that preserves authorization, contracts, proje
 - When edits are requested, complete and verify them. Deliver only a prompt, plan, review, report, or handoff when the user explicitly requests that artifact.
 - Read applicable instruction layers, role files, live references, Git status, and relevant diffs before editing. Preserve concurrent work and inspect ignored governance files directly.
 - Consult current official OpenAI documentation when changing discovery, configuration, model, reasoning, or subagent behavior. Label human reports as anecdotal and project observations as local evidence.
+
+## Start a new project setup
+
+- Read user-provided files or uploads and inspect the target repository before choosing an instruction structure. Do not require this repository or a fixed source path to be available.
+- For an authorized new setup, read [project-starter/README.md](assets/project-starter/README.md) and select only relevant templates for the confirmed project type and tool support. Fill verified facts, remove placeholders, and keep the always-loaded root and nested files brief.
+- Start with built-in agents; add custom roles only for a durable difference in ownership, permissions, tools, or expected output. Keep Model and reasoning choices unset until the target environment supports and needs a specific override.
+- Put task routing detail in a conditional guide when needed. Do not turn templates into standing instructions for every turn or treat a template as authorization to create tasks or delegate.
 
 ## Put each rule at the narrowest durable layer
 

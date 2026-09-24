@@ -4,6 +4,8 @@
 
 此 repository 是 [global `AGENTS.md`](./agents/AGENTS.md) 與自訂 Skill 的可版控來源 本機 Codex 設定目錄只作為安裝鏡像, 避免不同電腦雙向手動修改後產生漂移 [Agent 治理說明](./agents/README.md) 記錄分層與同步邊界
 
+建立新專案治理架構時, 可用 [agent-governance project starter](./skills/agent-governance/assets/project-starter/README.md) 依實際專案類型產生精簡的 root 與 nested `AGENTS.md`, Codex subagent 角色及條件式 task 指引 範本隨該 Skill ZIP 提供, 不依賴固定的本機 repository 路徑
+
 ## Skill catalog
 
 | 類別 | Skill | 用途 |

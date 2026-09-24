@@ -9,7 +9,9 @@
 - Custom Skill 保存只在特定任務需要的詳細程序 [task-routing](../skills/task-routing/SKILL.md) 負責分流與交接判斷, 不自行授予建立 task 或委派的權限
 - 目前 task 保存具體目標, 當次授權, 工作區狀態, 未解問題與停止條件
 
-SFAP 等專案的 role 設定, 未提交變更與本機 exclude 策略屬專案層, 不複製到此 global 來源檔 使用者若更改 task 名稱, 跨 task 回報仍須以實際 `threadId` 定位
+專案的 role 設定, 未提交變更與本機 exclude 策略屬專案層, 不複製到此 global 來源檔 使用者若更改 task 名稱, 跨 task 回報仍須以實際 `threadId` 定位
+
+新專案的 root, nested, subagent 與 task 範本收在 [agent-governance project starter](../skills/agent-governance/assets/project-starter/README.md) 使用時先依專案實際內容改寫, 不把範本當成已啟用的指示 Skill ZIP 也包含這些範本, 可在另一台電腦獨立使用
 
 ## 跨電腦同步
 
